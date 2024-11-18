@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.n-layout-sider .n-layout-sider--static-positioned, .n-layout-sider--show-content {
+    background-color: rgb(249 250 251) !important;
+}
+
+.n-layout-sider .n-layout-sider--bordered, .n-layout-sider--show-content {
+    background-color: #fff !important;
+}
+
+.n-layout-footer {
+    background-color: #fff
+}
+
+.n-collapse {
+    border: #e5e7eb solid 1px;
+    border-radius: 4px;
+}
+
+.n-collapse-item__header {
+    background-color: rgb(249 250 251);
+    padding: 6px !important;
+}
+
+.n-collapse-item__content-inner {
+    padding: 6px !important;
+}
+
+.n-collapse .n-collapse-item {
+    margin: 0 !important;
+}
