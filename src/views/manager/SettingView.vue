@@ -93,7 +93,7 @@ const formValue = ref({
   time: 5,
   guest: false,
   guest_password: '',
-  title: '云塔服务器探针',
+  title: '蓝鲸服务器探针',
   admin_account: '',
   admin_password: '',
 })

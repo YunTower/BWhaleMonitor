@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
     <n-divider />
-    <p>由<n-gradient-text type="success">云塔服务器探针</n-gradient-text>提供服务器监控支持</p>
+    <p>由<n-gradient-text type="success">蓝鲸服务器探针</n-gradient-text>提供服务器监控支持</p>
   </div>
 </template>
 <style>
