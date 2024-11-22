@@ -78,7 +78,7 @@ const { message } = createDiscreteApi(['message'])
 
 onMounted(async () => {
   try {
-    const resp = await requester.get('/server/get')
+    const resp = await requester.get('/data/list.json')
     if (resp.code == 0) {
       serverList.value = resp.data
     } else {

@@ -4,7 +4,7 @@
       <div class="mb-8">
         <h1 class="text-lg font-bold text-gray-600">
           欢迎使用
-          <n-gradient-text type="success"> 云塔服务器探针 </n-gradient-text>
+          <n-gradient-text type="success"> 蓝鲸服务器探针 </n-gradient-text>
         </h1>
         <p class="text-gray-500">在开始使用之前，你还需要一些设置</p>
       </div>
@@ -39,7 +39,7 @@ const formValue = ref({
   time: 5,
   guest: false,
   guest_password: '',
-  title: '云塔服务器探针',
+  title: '蓝鲸服务器探针',
   admin_account: '',
   admin_password: '',
 })

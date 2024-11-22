@@ -1,6 +1,6 @@
 <template>
   <n-spin :show="loading">
-    <router-view v-if="!isInstall" />
+    <router-view v-if="isInstall" />
     <BaseLayout v-else :name="computedLayout">
       <router-view />
     </BaseLayout>
