@@ -26,6 +26,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue'),
+      meta: {
+        title: '登录',
+        isMenu: true,
+      },
+    },
+    {
       path: '/',
       name: 'home',
       alias: ['/', '/home', '/index'],
