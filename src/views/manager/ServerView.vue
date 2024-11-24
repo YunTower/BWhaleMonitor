@@ -42,6 +42,7 @@
       <!--      <n-button>删除选中</n-button>-->
     </n-space>
     <n-data-table
+      :scroll-x="1800"
       :loading="tableLoading"
       :columns="columns"
       :data="tableData"

@@ -29,17 +29,17 @@
           <n-form-item path="title" label="面板标题">
             <n-input v-model:value="formValue.title" placeholder="" />
           </n-form-item>
-          <n-form-item path="admin_account" label="管理员账号">
+          <n-form-item path="username" label="管理员账号">
             <n-input
-              v-model:value="formValue.admin_account"
+              v-model:value="formValue.username"
               :disabled="adminAccountDisabled"
               placeholder=""
             />
             <n-button style="margin-left: 5px">修改</n-button>
           </n-form-item>
-          <n-form-item path="admin_password" label="管理员密码">
+          <n-form-item path="password" label="管理员密码">
             <n-input
-              v-model:value="formValue.admin_password"
+              v-model:value="formValue.password"
               :disabled="adminPasswordDisabled"
               placeholder="密码不少于6位"
             />
@@ -94,8 +94,8 @@ const formValue = ref({
   guest: false,
   guest_password: '',
   title: '蓝鲸服务器探针',
-  admin_account: '',
-  admin_password: '',
+  username: '',
+  password: '',
 })
 
 const formRules: FormRules = {
@@ -137,10 +137,13 @@ const formRules: FormRules = {
         if (!value || value == '') {
           return new Error('标题是必填')
         }
-      },
-    },
+        if (value.length < 4 || value.length > 50){
+          return new Error('标题长度需要在4-50位之间')
+        }
+      }
+    }
   ],
-  admin_account: [
+  username: [
     {
       required: true,
       trigger: ['change', 'blur'],
@@ -148,11 +151,14 @@ const formRules: FormRules = {
         if (!value || value == '') {
           return new Error('管理员账号是必填的')
         }
+        if (value.length < 8 || length > 50) {
+          return new Error('账号长度需要在8-50位之间')
+        }
         return true
-      },
-    },
+      }
+    }
   ],
-  admin_password: [
+  password: [
     {
       required: true,
       trigger: ['change', 'blur'],
@@ -160,14 +166,14 @@ const formRules: FormRules = {
         if (!value || value == '') {
           return new Error('管理员密码是必填的')
         } else {
-          const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
+          const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,50}$/
           if (!passwordRegex.test(value)) {
-            return new Error('密码至少包含字母和数字，且长度不小于6位')
+            return new Error('密码至少包含字母和数字，且长度在8-50位之间')
           }
         }
-      },
-    },
-  ],
+      }
+    }
+  ]
 }
 const showGuestPassword = ref(false)
 const adminAccountDisabled = ref(true)

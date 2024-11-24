@@ -3,7 +3,7 @@
     <n-layout-header>
       <Menu />
     </n-layout-header>
-    <n-layout has-sider>
+    <n-layout has-sider content-class="bg-gray-50">
       <n-layout-sider
         bordered
         collapse-mode="width"
@@ -25,12 +25,24 @@
   min-width: unset !important;
 }
 
+:deep(.n-layout-content) {
+  background-color: rgb(249 250 251);
+}
+
 :deep(.content) {
   padding: 10px;
   position: absolute;
   z-index: 9;
   overflow-y: scroll;
   width: 100%;
+}
+
+:deep(.n-layout-content) {
+  padding: 15px;
+}
+
+:deep(.n-layout-scroll-container .content) {
+  padding: 0;
 }
 </style>
 <script setup lang="ts">
