@@ -47,6 +47,7 @@
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import { ref } from 'vue'
 import requester from '@/utils/requester'
+import router from '@/router'
 
 const { message } = createDiscreteApi(['message'])
 const submitButtonLoading = ref(false)
@@ -139,30 +140,31 @@ const formRules: FormRules = {
 }
 
 const handleSubmitButtonClick = (e: MouseEvent) => {
-  e.preventDefault();
-  const loading = message.loading('正在初始化程序...');
-  submitButtonLoading.value = true;
+  e.preventDefault()
+  const loading = message.loading('正在初始化程序...')
+  submitButtonLoading.value = true
 
   formRef.value?.validate(async (errors) => {
     if (errors) {
-      message.error(errors[0][0].message);
-      submitButtonLoading.value = false;
-      loading.destroy();
+      message.error(errors[0][0].message)
+      submitButtonLoading.value = false
+      loading.destroy()
     } else {
       try {
-        const { code, msg } = await requester.post('/setting/install', formValue.value);
+        const { code, msg } = await requester.post('/setting/install', formValue.value)
         if (code === 0) {
-          message.success('初始化成功');
+          message.success('初始化成功，欢迎使用蓝鲸服务器探针', { duration: 5000 })
+          await router.push({ name: 'home' })
         } else {
-          message.error(`初始化失败（${msg}）`, { duration: 5000 });
+          message.error(`初始化失败（${msg}）`, { duration: 5000 })
         }
       } catch (error) {
-        message.error(`初始化失败，发生错误（${error.message}）`, { duration: 5000 });
+        message.error(`初始化失败，发生错误（${error.message}）`, { duration: 5000 })
       } finally {
-        submitButtonLoading.value = false;
-        loading.destroy();
+        submitButtonLoading.value = false
+        loading.destroy()
       }
     }
-  });
-};
+  })
+}
 </script>

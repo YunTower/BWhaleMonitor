@@ -1,5 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, useRoute } from 'vue-router'
 import { useRouteStore } from '@/stores/route'
+import requester from '@/utils/requester'
+import { useCommonStore } from '@/stores/common'
+import { storeToRefs } from 'pinia'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,11 +65,23 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+  const route = useRoute()
   const routeStore = useRouteStore()
+  const commonStore = useCommonStore()
+  const { isInstall } = storeToRefs(commonStore)
+
   if (to.meta.title) {
     document.title = to.meta.title + ' - ' + '云塔服务器探针'
   }
+
+  const resp = await requester.get('')
+  if (resp.code != 0) return
+  commonStore.setInstall()
+  if (isInstall.value && (to.name == 'install' || route.name == 'install')) {
+    await router.push('/')
+  }
+
   if (to.name.startsWith('manager-')) {
     routeStore.setMenuClicked('manager')
     routeStore.setSiderClicked(to.name)
