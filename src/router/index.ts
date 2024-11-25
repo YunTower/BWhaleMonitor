@@ -95,7 +95,7 @@ router.beforeEach(async (to, from, next) => {
     return next('/')
   }
 
-  if (isInstall.value && (to.name === 'install' || route.name === 'install')) {
+  if (isInstall.value && (to?.name === 'install' || route?.name === 'install')) {
     if (from.path !== '/') {
       return next('/')
     } else {

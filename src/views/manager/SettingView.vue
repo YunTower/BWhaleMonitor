@@ -13,16 +13,16 @@
               <template #suffix> 秒</template>
             </n-input-number>
           </n-form-item>
-          <n-form-item path="guest" label="游客访问">
+          <n-form-item path="visitor" label="游客访问">
             <n-switch
-              v-model:value="formValue.guest"
+              v-model:value="formValue.visitor"
               :round="false"
-              @update:value="onGuestUpdate"
+              @update:value="onVisitorUpdate"
             />
           </n-form-item>
-          <n-form-item path="guest_password" label="访问密码" v-show="showGuestPassword">
+          <n-form-item path="visitor_password" label="访问密码" v-show="showVisitorPassword">
             <n-input
-              v-model:value="formValue.guest_password"
+              v-model:value="formValue.visitor_password"
               placeholder="留空则游客查看不需要密码"
             />
           </n-form-item>
@@ -91,8 +91,8 @@ const { message } = createDiscreteApi(['message'])
 const formRef = ref<FormInst | null>(null)
 const formValue = ref({
   time: 5,
-  guest: false,
-  guest_password: '',
+  visitor: false,
+  visitor_password: '',
   title: '蓝鲸服务器探针',
   username: '',
   password: '',
@@ -111,11 +111,11 @@ const formRules: FormRules = {
       },
     },
   ],
-  guest_password: [
+  visitor_password: [
     {
       trigger: ['change', 'blur'],
       validator: (rule, value) => {
-        if (!formValue.value.guest) {
+        if (!formValue.value.visitor) {
           return false
         }
         if (!value || value == '') {
@@ -137,11 +137,11 @@ const formRules: FormRules = {
         if (!value || value == '') {
           return new Error('标题是必填')
         }
-        if (value.length < 4 || value.length > 50){
+        if (value.length < 4 || value.length > 50) {
           return new Error('标题长度需要在4-50位之间')
         }
-      }
-    }
+      },
+    },
   ],
   username: [
     {
@@ -155,8 +155,8 @@ const formRules: FormRules = {
           return new Error('账号长度需要在8-50位之间')
         }
         return true
-      }
-    }
+      },
+    },
   ],
   password: [
     {
@@ -171,17 +171,17 @@ const formRules: FormRules = {
             return new Error('密码至少包含字母和数字，且长度在8-50位之间')
           }
         }
-      }
-    }
-  ]
+      },
+    },
+  ],
 }
-const showGuestPassword = ref(false)
+const showVisitorPassword = ref(false)
 const adminAccountDisabled = ref(true)
 const adminPasswordDisabled = ref(true)
 const submitButtonLoading = ref(false)
 
-const onGuestUpdate = (value) => {
-  showGuestPassword.value = value
+const onVisitorUpdate = (value: boolean) => {
+  showVisitorPassword.value = value
 }
 
 const handleSubmitButtonClick = (e: MouseEvent) => {
@@ -193,14 +193,14 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
     }
     try {
       submitButtonLoading.value = true
-      const resp = await requester.get('/setting/save')
-      if (resp.code == 0) {
+      const { code, msg } = await requester.get('/setting/save')
+      if (code == 0) {
         message.success('保存成功')
       } else {
-        message.error(`保存失败（${resp.message}）`)
+        message.error(`保存失败（${msg}）`)
       }
     } catch (error) {
-      message.error(`保存失败，发生错误（${error.message}）`)
+      message.error(`保存失败，发生错误（${(error as Error).message}）`)
     } finally {
       submitButtonLoading.value = false
     }

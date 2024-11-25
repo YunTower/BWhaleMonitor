@@ -54,23 +54,23 @@
             登录
           </n-button>
         </n-tab-pane>
-        <n-tab-pane name="guest" tab="访客登录">
+        <n-tab-pane name="visitor" tab="访客登录">
           <n-form
-            ref="guestFormRef"
-            :model="guestFormValue"
-            :rules="guestFormRules"
+            ref="visitorFormRef"
+            :model="visitorFormValue"
+            :rules="visitorFormRules"
             :show-require-mark="false"
           >
             <n-form-item-row path="password" label="访问密码">
               <n-input
                 type="password"
-                v-model:value="guestFormValue.password"
+                v-model:value="visitorFormValue.password"
                 placeholder="请输入访问密码"
               />
             </n-form-item-row>
             <n-form-item-row path="captcha" label="验证码">
               <n-input-group>
-                <n-input v-model:value="guestFormValue.captcha" placeholder="请输入验证码" />
+                <n-input v-model:value="visitorFormValue.captcha" placeholder="请输入验证码" />
                 <n-image
                   class="h-[34px] captcha"
                   height="34"
@@ -87,8 +87,8 @@
           </n-form>
           <n-button
             type="primary"
-            @click="onGuestLogin"
-            :loading="guestLoginBtnLoading"
+            @click="onVisitorLogin"
+            :loading="visitorLoginBtnLoading"
             block
             strong
           >
@@ -117,15 +117,15 @@ const route = useRoute()
 const { message } = createDiscreteApi(['message'])
 const defaultTab = ref()
 const adminLoginBtnLoading = ref(false)
-const guestLoginBtnLoading = ref(false)
+const visitorLoginBtnLoading = ref(false)
 const adminFormRef = ref(null)
-const guestFormRef = ref(null)
+const visitorFormRef = ref(null)
 const adminFormValue = ref({
   username: '',
   password: '',
   captcha: '',
 })
-const guestFormValue = ref({
+const visitorFormValue = ref({
   password: '',
   captcha: '',
 })
@@ -142,10 +142,10 @@ const adminFormRules: FormRules = {
       trigger: ['change', 'blur'],
       validator: (rule, value) => {
         if (!value || value == '') {
-          return new Error('管理员账号是必填的')
+          return new Error('账号是必填的')
         }
         if (value.length < 8 || length > 50) {
-          return new Error('账号长度需要在8-50位之间')
+          return new Error('请输入正确的账号')
         }
         return true
       },
@@ -157,11 +157,11 @@ const adminFormRules: FormRules = {
       trigger: ['change', 'blur'],
       validator: (rule, value) => {
         if (!value || value == '') {
-          return new Error('管理员密码是必填的')
+          return new Error('密码是必填的')
         } else {
           const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,50}$/
           if (!passwordRegex.test(value)) {
-            return new Error('密码至少包含字母和数字，且长度在8-50位之间')
+            return new Error('请输入正确的密码')
           }
         }
       },
@@ -183,21 +183,21 @@ const adminFormRules: FormRules = {
   ],
 }
 
-const guestFormRules: FormRules = {
+const visitorFormRules: FormRules = {
   password: [
     {
       required: true,
       trigger: ['change', 'blur'],
       validator: (rule, value) => {
         if (!value || value == '') {
-          return new Error('管理员密码是必填的')
+          return new Error('访问密码是必填的')
         }
         if (!value || value == '') {
           return new Error('游客访问密码是必填的')
         } else {
           const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
           if (!passwordRegex.test(value)) {
-            return new Error('密码至少包含字母和数字，且长度不小于6位')
+            return new Error('请输入正确的访问密码')
           }
         }
       },
@@ -242,7 +242,7 @@ const handleLogin = async (
         const { code, msg } = await requester.post(loginUrl, (formValue as Ref).value)
         if (code === 0) {
           message.success('登录成功', { duration: 5000 })
-          await router.push({ name: 'home' })
+          await router.push('/')
         } else {
           message.error(`登录失败（${msg}）`, { duration: 5000 })
         }
@@ -261,15 +261,15 @@ const onAdminLogin = (e: MouseEvent) => {
   handleLogin(adminFormRef, adminFormValue, '/auth/admin', adminLoginBtnLoading)
 }
 
-const onGuestLogin = (e: MouseEvent) => {
+const onVisitorLogin = (e: MouseEvent) => {
   e.preventDefault()
-  handleLogin(guestFormRef, guestFormValue, '/auth/guest', guestLoginBtnLoading)
+  handleLogin(visitorFormRef, visitorFormValue, '/auth/visitor', visitorLoginBtnLoading)
 }
 
 onMounted(() => {
   getCaptcha()
-  if (route.query.type == 'guest') {
-    defaultTab.value = 'guest'
+  if (route.query.type == 'visitor') {
+    defaultTab.value = 'visitor'
   }
 })
 </script>

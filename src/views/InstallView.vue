@@ -55,45 +55,12 @@ const commonStore = useCommonStore()
 const submitButtonLoading = ref(false)
 const formRef = ref<FormInst | null>(null)
 const formValue = ref({
-  time: 5,
-  guest: false,
-  guest_password: '',
   title: '蓝鲸服务器探针',
   username: '',
   password: '',
 })
 
 const formRules: FormRules = {
-  time: [
-    {
-      required: true,
-      trigger: ['change', 'blur'],
-      validator: (rule, value) => {
-        if (value == null || value < 1 || value > 60) {
-          return new Error('请输入1-60之间的数字')
-        }
-        return true
-      },
-    },
-  ],
-  guest_password: [
-    {
-      trigger: ['change', 'blur'],
-      validator: (rule, value) => {
-        if (!formValue.value.guest) {
-          return false
-        }
-        if (!value || value == '') {
-          return new Error('游客访问密码是必填的')
-        } else {
-          const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
-          if (!passwordRegex.test(value)) {
-            return new Error('密码至少包含字母和数字，且长度不小于6位')
-          }
-        }
-      },
-    },
-  ],
   title: [
     {
       required: true,
