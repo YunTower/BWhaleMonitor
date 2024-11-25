@@ -34,9 +34,10 @@
                   class="h-[34px] captcha"
                   height="34"
                   width="130"
-                  src="/captcha.jpg"
+                  :src="captchaPic"
                   alt=""
                   @error="onCaptchaLoadError"
+                  @click="getCaptcha"
                   lazy
                   preview-disabled
                 />
@@ -74,9 +75,10 @@
                   class="h-[34px] captcha"
                   height="34"
                   width="130"
-                  src="/captcha.jpg"
+                  :src="captchaPic"
                   alt=""
                   @error="onCaptchaLoadError"
+                  @click="getCaptcha"
                   lazy
                   preview-disabled
                 />
@@ -106,14 +108,14 @@
 </style>
 <script setup lang="ts">
 import { onMounted, type Ref, ref } from 'vue'
-import { createDiscreteApi, type FormRules } from 'naive-ui'
+import { createDiscreteApi, type FormRules, type FormValidationError } from 'naive-ui'
 import { useRoute } from 'vue-router'
 import requester from '@/utils/requester'
 import router from '@/router'
 
 const route = useRoute()
 const { message } = createDiscreteApi(['message'])
-const defaultTab = ref('admin')
+const defaultTab = ref()
 const adminLoginBtnLoading = ref(false)
 const guestLoginBtnLoading = ref(false)
 const adminFormRef = ref(null)
@@ -127,6 +129,11 @@ const guestFormValue = ref({
   password: '',
   captcha: '',
 })
+
+const captchaPic = ref('')
+const getCaptcha = () => {
+  captchaPic.value = '/api/auth/captcha?t=' + new Date().getTime()
+}
 
 const adminFormRules: FormRules = {
   username: [
@@ -216,18 +223,23 @@ const onCaptchaLoadError = () => {
   console.log('captcha load error')
 }
 
-const handleLogin = async (formRef: Ref, formValue: object, loginUrl: string, btnLoading: Ref<boolean>) => {
+const handleLogin = async (
+  formRef: Ref,
+  formValue: object,
+  loginUrl: string,
+  btnLoading: Ref<boolean>,
+) => {
   const loading = message.loading('正在登录...')
   btnLoading.value = true
 
-  formRef.value?.validate(async (errors) => {
+  formRef.value?.validate(async (errors: Array<FormValidationError>) => {
     if (errors) {
-      message.error(errors[0][0].message)
+      message.error(errors[0][0].message as string)
       btnLoading.value = false
       loading.destroy()
     } else {
       try {
-        const { code, msg } = await requester.post(loginUrl, formValue.value)
+        const { code, msg } = await requester.post(loginUrl, (formValue as Ref).value)
         if (code === 0) {
           message.success('登录成功', { duration: 5000 })
           await router.push({ name: 'home' })
@@ -235,7 +247,7 @@ const handleLogin = async (formRef: Ref, formValue: object, loginUrl: string, bt
           message.error(`登录失败（${msg}）`, { duration: 5000 })
         }
       } catch (error) {
-        message.error(`登录失败，发生错误（${error.message}）`, { duration: 5000 })
+        message.error(`登录失败，发生错误（${(error as Error).message}）`, { duration: 5000 })
       } finally {
         btnLoading.value = false
         loading.destroy()
@@ -255,6 +267,7 @@ const onGuestLogin = (e: MouseEvent) => {
 }
 
 onMounted(() => {
+  getCaptcha()
   if (route.query.type == 'guest') {
     defaultTab.value = 'guest'
   }
