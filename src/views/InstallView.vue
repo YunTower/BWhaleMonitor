@@ -46,10 +46,12 @@
 <script setup lang="ts">
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import { ref } from 'vue'
-import requester from '@/utils/requester'
+import requester, {type BaseResponseType} from '@/utils/requester'
 import router from '@/router'
+import { useCommonStore } from '@/stores/common'
 
 const { message } = createDiscreteApi(['message'])
+const commonStore = useCommonStore()
 const submitButtonLoading = ref(false)
 const formRef = ref<FormInst | null>(null)
 const formValue = ref({
@@ -146,20 +148,21 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
 
   formRef.value?.validate(async (errors) => {
     if (errors) {
-      message.error(errors[0][0].message)
+      message.error(errors[0][0].message as string)
       submitButtonLoading.value = false
       loading.destroy()
     } else {
       try {
-        const { code, msg } = await requester.post('/setting/install', formValue.value)
+        const { code, msg }  = await requester.post('/setting/install', formValue.value)
         if (code === 0) {
+          commonStore.setInstall()
           message.success('初始化成功，欢迎使用蓝鲸服务器探针', { duration: 5000 })
           await router.push({ name: 'home' })
         } else {
           message.error(`初始化失败（${msg}）`, { duration: 5000 })
         }
       } catch (error) {
-        message.error(`初始化失败，发生错误（${error.message}）`, { duration: 5000 })
+        message.error(`初始化失败，发生错误（${(error as Error).message}）`, { duration: 5000 })
       } finally {
         submitButtonLoading.value = false
         loading.destroy()

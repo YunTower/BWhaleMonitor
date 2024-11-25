@@ -1,5 +1,5 @@
-import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
+import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import { createDiscreteApi } from 'naive-ui'
 
 export interface BaseResponseType<T> {
@@ -59,6 +59,9 @@ requester.interceptors.response.use(
 
 interface ExtendedAxiosInstance extends AxiosInstance {
   get<T>(url: string, config?: any): Promise<BaseResponseType<T>>
+  post<T>(url: string, data?: any, config?: any): Promise<BaseResponseType<T>>
+  put<T>(url: string, data?: any, config?: any): Promise<BaseResponseType<T>>
+  delete<T>(url: string, config?: any): Promise<BaseResponseType<T>>
 }
 
 const extendedRequester: ExtendedAxiosInstance = requester as ExtendedAxiosInstance

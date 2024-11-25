@@ -84,23 +84,34 @@ router.beforeEach(async (to, from, next) => {
     document.title = to.meta.title + ' - ' + '云塔服务器探针'
   }
 
-  const resp = await requester.get('')
-  if (resp.code != 0) return
-  commonStore.setInstall()
-  if (isInstall.value && (to.name == 'install' || route.name == 'install')) {
-    await router.push('/')
-  }
-
-  if (to.name.startsWith('manager-')) {
-    routeStore.setMenuClicked('manager')
-    routeStore.setSiderClicked(to.name)
-  } else if (to.meta?.isMenu) {
-    routeStore.setMenuClicked(to.name)
+  const { code } = await requester.get('')
+  if (code != 0 && to.path !== '/install') {
+    return next('/install')
   } else {
-    routeStore.setSiderClicked(to.name)
+    commonStore.setInstall()
   }
 
-  next()
+  if (code == 0 && to.name === 'install') {
+    return next('/')
+  }
+
+  if (isInstall.value && (to.name === 'install' || route.name === 'install')) {
+    if (from.path !== '/') {
+      return next('/')
+    } else {
+      return next()
+    }
+  } else {
+    if (typeof to.name === 'string' && to.name.startsWith('manager-')) {
+      routeStore.setMenuClicked('manager')
+      routeStore.setSiderClicked(to.name)
+    } else if (to.meta?.isMenu) {
+      routeStore.setMenuClicked(to.name as string)
+    } else {
+      routeStore.setSiderClicked(to.name as string)
+    }
+    return next()
+  }
 })
 
 export default router
