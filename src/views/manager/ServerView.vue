@@ -61,19 +61,7 @@ import {
   NSpace,
   NTag,
 } from 'naive-ui'
-
-interface ServerInfo {
-  id: number
-  name: string
-  os: string
-  ip: string
-  location: string
-  cpu: number
-  memory: number
-  disk: number
-  network: string
-  status: number
-}
+import type {ServerInfoType} from "../../../types";
 
 const pagination = {
   pageSize: 10,
@@ -169,7 +157,7 @@ const columns = [
 ]
 
 const formRef = ref(null)
-const tableData = ref([] as ServerInfo)
+const tableData = ref([] as ServerInfoType)
 const tableLoading = ref(true)
 const addButtonLoading = ref(false)
 const addModalVisible = ref(false)

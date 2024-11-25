@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full h-full flex justify-center">
-    <n-card class="max-w-[430px] max-h-[428px]">
+  <div class="w-full h-full flex items-center justify-center bg-gray-50 fixed">
+    <n-card class="max-w-[430px] max-h-[428px] bottom-20">
       <n-tabs
         class="card-tabs"
         default-value="admin"
@@ -54,7 +54,7 @@
             登录
           </n-button>
         </n-tab-pane>
-        <n-tab-pane name="visitor" tab="访客登录">
+        <n-tab-pane name="visitor" tab="访客登录" v-if="baseConfig?.visitor">
           <n-form
             ref="visitorFormRef"
             :model="visitorFormValue"
@@ -112,8 +112,13 @@ import { createDiscreteApi, type FormRules, type FormValidationError } from 'nai
 import { useRoute } from 'vue-router'
 import requester from '@/utils/requester'
 import router from '@/router'
+import { useCommonStore } from '@/stores/common'
+import { storeToRefs } from 'pinia'
+import type {baseConfigType} from "../../types";
 
 const route = useRoute()
+const commonStore = useCommonStore()
+const { baseConfig } = storeToRefs(commonStore)
 const { message } = createDiscreteApi(['message'])
 const defaultTab = ref()
 const adminLoginBtnLoading = ref(false)
@@ -263,6 +268,7 @@ const onAdminLogin = (e: MouseEvent) => {
 
 const onVisitorLogin = (e: MouseEvent) => {
   e.preventDefault()
+  if (!baseConfig.value?.visitor) return;
   handleLogin(visitorFormRef, visitorFormValue, '/auth/visitor', visitorLoginBtnLoading)
 }
 

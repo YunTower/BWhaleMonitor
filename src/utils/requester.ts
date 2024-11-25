@@ -1,12 +1,7 @@
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import { createDiscreteApi } from 'naive-ui'
-
-export interface BaseResponseType<T> {
-  code: number
-  data: T
-  msg: string
-}
+import type {BaseResponseType} from "@/../types";
 
 const { message } = createDiscreteApi(['message'])
 

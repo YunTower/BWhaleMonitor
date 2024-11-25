@@ -7,7 +7,6 @@ export interface BaseResponseType<T> {
 export interface userType {
   username: string
   role: 'admin' | 'visitor'
-  isLogin: boolean
 }
 
 export interface ServerItemType {
@@ -38,4 +37,9 @@ export interface ServerInfoType {
   disk: number
   network: string
   status: number
+}
+
+export interface baseConfigType {
+  title: string
+  visitor: boolean
 }

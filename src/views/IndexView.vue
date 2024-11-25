@@ -54,26 +54,12 @@
 import { onMounted, ref } from 'vue'
 import { createDiscreteApi } from 'naive-ui'
 import requester from '@/utils/requester'
+import type {ServerItemType} from "../../types";
 
-interface ServerItem {
-  id: number
-  name: string
-  cpu: number
-  memory: number
-  disk: number
-  cpu_use: number
-  memory_use: number
-  disk_use: number
-  os: string
-  ip: string
-  location: string
-  net_download: number
-  net_upload: number
-  status: 1 | 0
-}
+
 
 const loading = ref(true)
-const serverList = ref([] as ServerItem[])
+const serverList = ref([] as ServerItemType[])
 const { message } = createDiscreteApi(['message'])
 
 onMounted(async () => {

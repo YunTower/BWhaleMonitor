@@ -14,7 +14,9 @@
       <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" responsive />
       <div class="username">
         <n-dropdown :options="dropdownOptions">
-          <n-gradient-text type="success" size="15"> fish</n-gradient-text>
+          <n-gradient-text type="success" size="15">{{
+            isUserLogin ? userInfo?.username : '未登录'
+          }}</n-gradient-text>
         </n-dropdown>
       </div>
     </n-space>
@@ -67,9 +69,12 @@ import { type MenuOption, useThemeVars } from 'naive-ui'
 import { RouterLink, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useRouteStore } from '@/stores/route'
+import { useCommonStore } from '@/stores/common'
 
 const routeStore = useRouteStore()
+const commonStore = useCommonStore()
 const { menuClicked } = storeToRefs(routeStore)
+const { isUserLogin, userInfo } = storeToRefs(commonStore)
 const activeKey = ref<string | null>(menuClicked)
 const route = useRoute()
 const themeVars = useThemeVars()
