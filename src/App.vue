@@ -16,8 +16,6 @@ import { useRoute } from 'vue-router'
 import BaseLayout from '@/components/BaseLayout.vue'
 import { useCommonStore } from '@/stores/common'
 import { storeToRefs } from 'pinia'
-import requester from '@/utils/requester'
-import type { baseConfigType } from '../types'
 
 const commonStore = useCommonStore()
 const { isInstall } = storeToRefs(commonStore)
@@ -30,10 +28,5 @@ const computedLayout = computed(() => (isManagerPage.value ? 'ManagerLayout' : '
 
 onMounted(async () => {
   loading.value = false
-
-  const { code, data } = await requester.get('/setting/get?columns=title,guest')
-  if (code == 0) {
-    commonStore.setBaseConfig(data as baseConfigType)
-  }
 })
 </script>

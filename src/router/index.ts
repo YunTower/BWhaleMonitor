@@ -3,6 +3,7 @@ import { useRouteStore } from '@/stores/route'
 import requester from '@/utils/requester'
 import { useCommonStore } from '@/stores/common'
 import { storeToRefs } from 'pinia'
+import type { baseConfigType } from '../../types'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -84,11 +85,12 @@ router.beforeEach(async (to, from, next) => {
     document.title = to.meta.title + ' - ' + (commonStore.baseConfig?.title ?? '蓝鲸服务器探针')
   }
 
-  const { code } = await requester.get('')
+  const { code, data } = await requester.get('/setting/get?columns=title,guest')
   if (code !== 0 && to.path !== '/install') {
     return next('/install')
   } else {
     commonStore.setInstall()
+    commonStore.setBaseConfig(data as baseConfigType)
   }
 
   if (code === 0 && to.name === 'install') {
