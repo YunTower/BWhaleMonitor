@@ -114,7 +114,7 @@ import requester from '@/utils/requester'
 import router from '@/router'
 import { useCommonStore } from '@/stores/common'
 import { storeToRefs } from 'pinia'
-import type {baseConfigType} from "../../types";
+import type { baseConfigType } from '../../types'
 
 const route = useRoute()
 const commonStore = useCommonStore()
@@ -244,9 +244,10 @@ const handleLogin = async (
       loading.destroy()
     } else {
       try {
-        const { code, msg } = await requester.post(loginUrl, (formValue as Ref).value)
+        const { code, msg, data } = await requester.post(loginUrl, (formValue as Ref).value)
         if (code === 0) {
           message.success('登录成功', { duration: 5000 })
+          commonStore.setUserLogin(data)
           await router.push('/')
         } else {
           message.error(`登录失败（${msg}）`, { duration: 5000 })
@@ -268,7 +269,7 @@ const onAdminLogin = (e: MouseEvent) => {
 
 const onVisitorLogin = (e: MouseEvent) => {
   e.preventDefault()
-  if (!baseConfig.value?.visitor) return;
+  if (!baseConfig.value?.visitor) return
   handleLogin(visitorFormRef, visitorFormValue, '/auth/visitor', visitorLoginBtnLoading)
 }
 

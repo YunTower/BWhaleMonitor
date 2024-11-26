@@ -1,7 +1,7 @@
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import { createDiscreteApi } from 'naive-ui'
-import type {BaseResponseType} from "@/../types";
+import type { baseConfigType, BaseResponseType, ErrorResponseType } from '@/../types'
 
 const { message } = createDiscreteApi(['message'])
 
@@ -48,14 +48,24 @@ requester.interceptors.response.use(
     ) {
       message.error('网络异常，请求超时！')
     }
-    return Promise.reject(error.response)
+
+    const baseResponse: BaseResponseType<any> = {
+      code: (error.response?.data as { code: number })?.code || -1,
+      data: (error.response?.data as { data: any })?.data || null,
+      msg: (error.response?.data as { msg: string })?.msg || '未知错误',
+      error,
+    }
+    return baseResponse
   },
 )
 
 interface ExtendedAxiosInstance extends AxiosInstance {
   get<T>(url: string, config?: any): Promise<BaseResponseType<T>>
+
   post<T>(url: string, data?: any, config?: any): Promise<BaseResponseType<T>>
+
   put<T>(url: string, data?: any, config?: any): Promise<BaseResponseType<T>>
+
   delete<T>(url: string, config?: any): Promise<BaseResponseType<T>>
 }
 

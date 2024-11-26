@@ -2,6 +2,7 @@ export interface BaseResponseType<T> {
   code: number
   data: T
   msg: string
+  error?: any
 }
 
 export interface userType {

@@ -30,11 +30,13 @@ const isManagerPage = computed(() => {
   return routeName?.startsWith('manager-') || routeName === 'manager'
 })
 
-const computedLayout = computed(() => isManagerPage.value ? 'ManagerLayout' : 'DefaultLayout')
+const computedLayout = computed(() => (isManagerPage.value ? 'ManagerLayout' : 'DefaultLayout'))
 
 onMounted(async () => {
   loading.value = false
   noNeedMenu.value = !isInstall.value || route.name === 'login'
-  console.log(noNeedMenu.value)
+  if (!noNeedMenu.value && (isInstall.value || route.name != 'login')) {
+    noNeedMenu.value = true;
+  }
 })
 </script>
