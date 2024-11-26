@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseLayout from '@/components/BaseLayout.vue'
 import { useCommonStore } from '@/stores/common'
@@ -32,9 +32,16 @@ const isManagerPage = computed(() => {
 
 const computedLayout = computed(() => (isManagerPage.value ? 'ManagerLayout' : 'DefaultLayout'))
 
+const updateNoNeedMenu = () => {
+  noNeedMenu.value = !isInstall.value || route.name === 'login'
+}
+
 onMounted(async () => {
   loading.value = false
-  if (isInstall.value || route.name != 'login') noNeedMenu.value = false
-  noNeedMenu.value = !isInstall.value || route.name == 'login'
+  updateNoNeedMenu()
+})
+
+watch(() => route.name, () => {
+  updateNoNeedMenu()
 })
 </script>
