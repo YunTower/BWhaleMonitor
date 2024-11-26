@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 fixed h-full w-full flex justify-center">
-    <n-card class="text-center w-4/6 absolute top-[15%]">
+    <n-card class="text-center w-4/6 max-w-[500px] absolute top-[15%]">
       <div class="mb-8">
         <h1 class="text-lg font-bold text-gray-600">
           欢迎使用
