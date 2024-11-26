@@ -79,7 +79,7 @@ router.beforeEach(async (to, from, next) => {
   const route = useRoute()
   const routeStore = useRouteStore()
   const commonStore = useCommonStore()
-  const { isInstall, isUserLogin } = storeToRefs(commonStore)
+  const { isInstall, isUserLogin, userInfo } = storeToRefs(commonStore)
 
   if (to.meta.title) {
     document.title = to.meta.title + ' - ' + (commonStore.baseConfig?.title ?? '蓝鲸服务器探针')
@@ -107,6 +107,16 @@ router.beforeEach(async (to, from, next) => {
 
   if (!isUserLogin.value && to.name !== 'login') {
     return next('/login')
+  }
+
+  if (isUserLogin.value) {
+    if (
+      userInfo.value?.role != 'admin' &&
+      typeof to.name === 'string' &&
+      to.name?.startsWith('manager-')
+    ) {
+      return next('/')
+    }
   }
 
   if (typeof to.name === 'string' && to.name.startsWith('manager-')) {

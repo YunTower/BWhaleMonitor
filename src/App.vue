@@ -34,9 +34,7 @@ const computedLayout = computed(() => (isManagerPage.value ? 'ManagerLayout' : '
 
 onMounted(async () => {
   loading.value = false
-  noNeedMenu.value = !isInstall.value || route.name === 'login'
-  if (!noNeedMenu.value && (isInstall.value || route.name != 'login')) {
-    noNeedMenu.value = true;
-  }
+  if (isInstall.value || route.name != 'login') noNeedMenu.value = false
+  noNeedMenu.value = !isInstall.value || route.name == 'login'
 })
 </script>
