@@ -85,8 +85,8 @@ router.beforeEach(async (to, from, next) => {
     document.title = to.meta.title + ' - ' + (commonStore.baseConfig?.title ?? '蓝鲸服务器探针')
   }
 
-  const { code, data } = await requester.get('/setting/get?columns=title,guest')
-  if (code !== 0 && to.path !== '/install') {
+  const { code, data } = await requester.get('/setting/get?columns=title,visitor')
+  if (code !== 0 && code == 1501 && to.path !== '/install') {
     return next('/install')
   } else {
     commonStore.setInstall()
