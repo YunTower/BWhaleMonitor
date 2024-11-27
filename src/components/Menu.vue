@@ -82,6 +82,7 @@ const router = useRouter()
 const themeVars = useThemeVars()
 const name = route.name
 const { message } = createDiscreteApi(['message'])
+const isAdminRole = ref(false)
 
 const dropdownOptions = [
   {
@@ -115,9 +116,6 @@ const menuOptions: MenuOption[] = [
       ),
     key: 'home',
   },
-]
-
-const menuOnlyAdmin: MenuOption[] = [
   {
     label: () =>
       h(
@@ -128,12 +126,13 @@ const menuOnlyAdmin: MenuOption[] = [
         { default: () => '管理' },
       ),
     key: 'manager',
+    show: isAdminRole,
   },
 ]
 
 onMounted(() => {
   if (commonStore.userInfo?.role == 'admin') {
-    menuOptions.push(...menuOnlyAdmin)
+    isAdminRole.value = true
   }
 })
 </script>
