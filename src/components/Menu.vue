@@ -13,10 +13,10 @@
       </div>
       <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" responsive />
       <div class="username">
-        <n-dropdown :options="dropdownOptions">
-          <n-gradient-text type="success" size="15">{{
-            isUserLogin ? userInfo?.username : '未登录'
-          }}</n-gradient-text>
+        <n-dropdown :options="dropdownOptions" @select="handleSelect">
+          <n-gradient-text type="success" size="15"
+            >{{ isUserLogin ? userInfo?.username : '未登录' }}
+          </n-gradient-text>
         </n-dropdown>
       </div>
     </n-space>
@@ -65,11 +65,12 @@
 </style>
 <script setup lang="ts">
 import { h, ref } from 'vue'
-import { type MenuOption, useThemeVars } from 'naive-ui'
-import { RouterLink, useRoute } from 'vue-router'
+import { type MenuOption, useThemeVars, createDiscreteApi } from 'naive-ui'
+import {RouterLink, useRoute, useRouter} from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useRouteStore } from '@/stores/route'
 import { useCommonStore } from '@/stores/common'
+import requester from '@/utils/requester'
 
 const routeStore = useRouteStore()
 const commonStore = useCommonStore()
@@ -77,8 +78,10 @@ const { menuClicked } = storeToRefs(routeStore)
 const { isUserLogin, userInfo } = storeToRefs(commonStore)
 const activeKey = ref<string | null>(menuClicked)
 const route = useRoute()
+const router = useRouter()
 const themeVars = useThemeVars()
 const name = route.name
+const { message } = createDiscreteApi(['message'])
 
 const dropdownOptions = [
   {
@@ -86,6 +89,19 @@ const dropdownOptions = [
     key: 'logout',
   },
 ]
+
+const handleSelect = async (key: string | number) => {
+  if (key == 'logout') {
+    const { code, msg } = await requester.post('/auth/logout')
+    if (code == 0) {
+      message.success('退出成功')
+      commonStore.setUserLogout()
+      await router.push('/login')
+    } else {
+      message.error(`退出失败，${msg}`)
+    }
+  }
+}
 
 const menuOptions: MenuOption[] = [
   {
