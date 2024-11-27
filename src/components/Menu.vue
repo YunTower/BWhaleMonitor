@@ -64,9 +64,9 @@
 }
 </style>
 <script setup lang="ts">
-import { h, ref } from 'vue'
+import { h, onMounted, ref } from 'vue'
 import { type MenuOption, useThemeVars, createDiscreteApi } from 'naive-ui'
-import {RouterLink, useRoute, useRouter} from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useRouteStore } from '@/stores/route'
 import { useCommonStore } from '@/stores/common'
@@ -115,6 +115,9 @@ const menuOptions: MenuOption[] = [
       ),
     key: 'home',
   },
+]
+
+const menuOnlyAdmin: MenuOption[] = [
   {
     label: () =>
       h(
@@ -127,4 +130,10 @@ const menuOptions: MenuOption[] = [
     key: 'manager',
   },
 ]
+
+onMounted(() => {
+  if (commonStore.userInfo?.role == 'admin') {
+    menuOptions.push(...menuOnlyAdmin)
+  }
+})
 </script>

@@ -43,4 +43,5 @@ export interface ServerInfoType {
 export interface baseConfigType {
   title: string
   visitor: boolean
+  visitor_password: boolean
 }

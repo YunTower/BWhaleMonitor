@@ -61,7 +61,11 @@
             :rules="visitorFormRules"
             :show-require-mark="false"
           >
-            <n-form-item-row path="password" label="访问密码">
+            <n-form-item-row
+              path="password"
+              label="访问密码"
+              v-if="commonStore.baseConfig?.visitor_password"
+            >
               <n-input
                 type="password"
                 v-model:value="visitorFormValue.password"
@@ -114,7 +118,6 @@ import requester from '@/utils/requester'
 import router from '@/router'
 import { useCommonStore } from '@/stores/common'
 import { storeToRefs } from 'pinia'
-import type { baseConfigType } from '../../types'
 
 const route = useRoute()
 const commonStore = useCommonStore()
@@ -131,7 +134,7 @@ const adminFormValue = ref({
   captcha: '',
 })
 const visitorFormValue = ref({
-  password: '',
+  password: null,
   captcha: '',
 })
 
@@ -270,6 +273,11 @@ const onAdminLogin = (e: MouseEvent) => {
 const onVisitorLogin = (e: MouseEvent) => {
   e.preventDefault()
   if (!baseConfig.value?.visitor) return
+  if (!commonStore.baseConfig?.visitor_password) {
+    if (visitorFormValue.value.password == '') {
+      visitorFormValue.value.password = null
+    }
+  }
   handleLogin(visitorFormRef, visitorFormValue, '/auth/visitor', visitorLoginBtnLoading)
 }
 
