@@ -1,10 +1,13 @@
 import { createRouter, createWebHistory, useRoute } from 'vue-router'
+import { createDiscreteApi } from 'naive-ui'
 import { useRouteStore } from '@/stores/route'
 import requester from '@/utils/requester'
 import { useCommonStore } from '@/stores/common'
 import { storeToRefs } from 'pinia'
 import type { baseConfigType } from '../../types'
+import { ref, watch } from 'vue'
 
+const { message } = createDiscreteApi(['message'])
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -79,10 +82,15 @@ router.beforeEach(async (to, from, next) => {
   const route = useRoute()
   const routeStore = useRouteStore()
   const commonStore = useCommonStore()
+  const mainTitle = ref('服务器探针')
   const { isInstall, isUserLogin, userInfo } = storeToRefs(commonStore)
 
+  watch(mainTitle, (newValue, oldValue) => {
+    document.title = to.meta.title + ' - ' + mainTitle.value
+  })
+
   if (to.meta.title) {
-    document.title = to.meta.title + ' - ' + (commonStore.baseConfig?.title ?? '蓝鲸服务器探针')
+    document.title = to.meta.title + ' - ' + mainTitle.value
   }
 
   const { code, data } = await requester.get('/setting/get?columns=title,guest')
@@ -91,6 +99,9 @@ router.beforeEach(async (to, from, next) => {
   } else {
     commonStore.setInstall()
     commonStore.setBaseConfig(data as baseConfigType)
+    if (commonStore.baseConfig?.title) {
+      mainTitle.value = commonStore.baseConfig?.title
+    }
   }
 
   if (code === 0 && to.name === 'install') {
@@ -106,6 +117,12 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (!isUserLogin.value && to.name !== 'login') {
+    const { code, data, msg } = await requester.get('/auth/check')
+    if (code == 0) {
+      commonStore.setUserLogin(data)
+      return next()
+    }
+    message.error(msg)
     return next('/login')
   }
 

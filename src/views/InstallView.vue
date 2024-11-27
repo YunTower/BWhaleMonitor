@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import { ref } from 'vue'
-import requester, {type BaseResponseType} from '@/utils/requester'
+import requester from '@/utils/requester'
 import router from '@/router'
 import { useCommonStore } from '@/stores/common'
 
