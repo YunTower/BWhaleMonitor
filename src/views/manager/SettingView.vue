@@ -3,9 +3,9 @@
     <n-tabs type="line" default-value="baseSetting">
       <n-tab-pane name="baseSetting" tab="基础设置">
         <n-form ref="formRef" :model="formValue" :rules="formRules">
-          <n-form-item path="time" label="检测间隔">
+          <n-form-item path="interval" label="检测间隔">
             <n-input-number
-              v-model:value="formValue.time"
+              v-model:value="formValue.interval"
               placeholder="不能小于1秒大于60秒"
               :min="1"
               :max="60"
@@ -13,7 +13,7 @@
               <template #suffix> 秒</template>
             </n-input-number>
           </n-form-item>
-          <n-form-item path="visitor" label="游客访问">
+          <n-form-item path="visitor" label="访客访问">
             <n-switch
               v-model:value="formValue.visitor"
               :round="false"
@@ -23,7 +23,7 @@
           <n-form-item path="visitor_password" label="访问密码" v-show="showVisitorPassword">
             <n-input
               v-model:value="formValue.visitor_password"
-              placeholder="留空则游客查看不需要密码"
+              placeholder="留空则访客查看不需要密码"
             />
           </n-form-item>
           <n-form-item path="title" label="面板标题">
@@ -81,16 +81,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import requester from '@/utils/requester'
+import type { systemConfigType } from '../../../types'
 
 const newVersion = ref('获取中')
 const localVersion = ref('1.0.0')
 const { message } = createDiscreteApi(['message'])
 const formRef = ref<FormInst | null>(null)
 const formValue = ref({
-  time: 5,
+  interval: 5,
   visitor: false,
   visitor_password: '',
   title: '蓝鲸服务器探针',
@@ -99,7 +100,7 @@ const formValue = ref({
 })
 
 const formRules: FormRules = {
-  time: [
+  interval: [
     {
       required: true,
       trigger: ['change', 'blur'],
@@ -115,15 +116,10 @@ const formRules: FormRules = {
     {
       trigger: ['change', 'blur'],
       validator: (rule, value) => {
-        if (!formValue.value.visitor) {
-          return false
-        }
-        if (!value || value == '') {
-          return new Error('游客访问密码是必填的')
-        } else {
+        if (formValue.value.visitor && value) {
           const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
           if (!passwordRegex.test(value)) {
-            return new Error('密码至少包含字母和数字，且长度不小于6位')
+            return new Error('访问密码至少包含字母和数字，且长度不小于6位')
           }
         }
       },
@@ -190,20 +186,45 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
     if (errors) {
       message.error(`验证失败（${errors[0][0].message}）`)
       return
-    }
-    try {
-      submitButtonLoading.value = true
-      const { code, msg } = await requester.get('/setting/save')
-      if (code == 0) {
-        message.success('保存成功')
-      } else {
-        message.error(`保存失败（${msg}）`)
+    } else {
+      try {
+        submitButtonLoading.value = true
+        const { code, msg } = await requester.get('/setting/save')
+        if (code == 0) {
+          message.success('保存成功')
+        } else {
+          message.error(`保存失败（${msg}）`)
+        }
+      } catch (error) {
+        message.error(`保存失败，发生错误（${(error as Error).message}）`)
+      } finally {
+        submitButtonLoading.value = false
       }
-    } catch (error) {
-      message.error(`保存失败，发生错误（${(error as Error).message}）`)
-    } finally {
-      submitButtonLoading.value = false
     }
   })
 }
+
+onMounted(async () => {
+  let { code, msg, data } = await requester.get(
+    '/setting/get?columns=title,interval,visitor,visitor_password,username,password',
+  )
+  if (code == 0) {
+    let password
+    if ((data as systemConfigType)?.password == true) {
+      password = '*'.repeat(15)
+    } else {
+      password = ''
+    }
+    // @ts-ignore
+    formValue.value = {
+      ...(data as systemConfigType),
+      ...{
+        password: password,
+        visitor_password: (data as systemConfigType)?.visitor_password || '',
+      },
+    }
+  } else {
+    message.error(`拉取设置失败（${msg}）`)
+  }
+})
 </script>
