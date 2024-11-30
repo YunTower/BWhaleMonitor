@@ -1,10 +1,9 @@
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import { createDiscreteApi } from 'naive-ui'
-import type { baseConfigType, BaseResponseType, ErrorResponseType } from '@/../types'
+import type { BaseResponseType } from '@/../types'
 
 const { message } = createDiscreteApi(['message'])
-
 const requester: AxiosInstance = axios.create({
   // 设置基础路径
   baseURL: '/api',
@@ -23,7 +22,7 @@ requester.interceptors.request.use(
 
 requester.interceptors.response.use(
   async (response: AxiosResponse) => {
-    const baseResponse: BaseResponseType<any> = {
+    const baseResponse: BaseResponseType<object> = {
       code: response.data.code,
       data: response.data.data,
       msg: response.data.msg,
@@ -49,9 +48,9 @@ requester.interceptors.response.use(
       message.error('网络异常，请求超时！')
     }
 
-    const baseResponse: BaseResponseType<any> = {
+    const baseResponse: BaseResponseType<object> = {
       code: (error.response?.data as { code: number })?.code || -1,
-      data: (error.response?.data as { data: any })?.data || null,
+      data: (error.response?.data as { data: object })?.data || null,
       msg: (error.response?.data as { msg: string })?.msg || '未知错误',
       error,
     }
@@ -60,13 +59,13 @@ requester.interceptors.response.use(
 )
 
 interface ExtendedAxiosInstance extends AxiosInstance {
-  get<T>(url: string, config?: any): Promise<BaseResponseType<T>>
+  get<T>(url: string, config?: object): Promise<BaseResponseType<T>>
 
-  post<T>(url: string, data?: any, config?: any): Promise<BaseResponseType<T>>
+  post<T>(url: string, data?: object, config?: object): Promise<BaseResponseType<T>>
 
-  put<T>(url: string, data?: any, config?: any): Promise<BaseResponseType<T>>
+  put<T>(url: string, data?: object, config?: object): Promise<BaseResponseType<T>>
 
-  delete<T>(url: string, config?: any): Promise<BaseResponseType<T>>
+  delete<T>(url: string, config?: object): Promise<BaseResponseType<T>>
 }
 
 const extendedRequester: ExtendedAxiosInstance = requester as ExtendedAxiosInstance

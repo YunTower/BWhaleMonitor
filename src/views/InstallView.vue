@@ -49,6 +49,7 @@ import { ref } from 'vue'
 import requester from '@/utils/requester'
 import router from '@/router'
 import { useCommonStore } from '@/stores/common'
+import { sha256 } from 'js-sha256'
 
 const { message } = createDiscreteApi(['message'])
 const commonStore = useCommonStore()
@@ -120,11 +121,14 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
       loading.destroy()
     } else {
       try {
-        const { code, msg }  = await requester.post('/setting/install', formValue.value)
+        const { code, msg } = await requester.post('/setting/install', {
+          ...formValue.value,
+          ...{ password: sha256(formValue.value.password) },
+        })
         if (code === 0) {
           commonStore.setInstall()
           message.success('初始化成功，欢迎使用蓝鲸服务器探针', { duration: 5000 })
-          await router.push({ name: 'home' })
+          await router.push('/')
         } else {
           message.error(`初始化失败（${msg}）`, { duration: 5000 })
         }
