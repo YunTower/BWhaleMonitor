@@ -124,7 +124,7 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
         if (code === 0) {
           commonStore.setInstall()
           message.success('初始化成功，欢迎使用蓝鲸服务器探针', { duration: 5000 })
-          await router.push({ name: 'home' })
+          await router.push('/')
         } else {
           message.error(`初始化失败（${msg}）`, { duration: 5000 })
         }

@@ -89,14 +89,16 @@ const addDynamicRoutes = (routesToAdd: RouteRecordRaw[]) => {
   })
 }
 
+let isRedirected = false
+
 router.beforeEach(async (to, from, next) => {
   const route = useRoute()
   const routeStore = useRouteStore()
   const commonStore = useCommonStore()
   const mainTitle = ref('服务器探针')
-  const { isInstall, isUserLogin, userInfo } = storeToRefs(commonStore)
+  const { isUserLogin, userInfo } = storeToRefs(commonStore)
 
-  watch(mainTitle, (newValue, oldValue) => {
+  watch(mainTitle, () => {
     document.title = to.meta.title + ' - ' + mainTitle.value
   })
 
@@ -104,29 +106,30 @@ router.beforeEach(async (to, from, next) => {
     document.title = to.meta.title + ' - ' + mainTitle.value
   }
 
+  /**
+   * 安装检查&配置获取
+   */
   const { code, data } = await requester.get('/setting/get?columns=title,visitor,visitor_password')
-  if (code !== 0 && code == 1501 && to.path !== '/install') {
-    return next('/install')
-  } else {
-    commonStore.setInstall()
-    commonStore.setBaseConfig(data as baseConfigType)
-    if (commonStore.baseConfig?.title) {
-      mainTitle.value = commonStore.baseConfig?.title
-    }
-  }
-
-  if (code === 0 && to.name === 'install') {
-    return next('/')
-  }
-
-  if (isInstall.value && (to?.name === 'install' || route?.name === 'install')) {
-    if (from.path !== '/') {
-      return next('/')
-    } else {
+  if (code === 1501) {
+    if (to.path === '/install') {
       return next()
     }
+
+    if (!isRedirected) {
+      isRedirected = true
+      return next('/install')
+    }
   }
 
+  commonStore.setInstall()
+  commonStore.setBaseConfig(data as baseConfigType)
+  if (commonStore.baseConfig?.title) {
+    mainTitle.value = commonStore.baseConfig?.title
+  }
+
+  /**
+   * 权限检查
+   */
   if (!isUserLogin.value && to.name !== 'login') {
     const { code, data, msg } = await requester.get('/auth/check')
     if (code == 0) {
@@ -160,6 +163,7 @@ router.beforeEach(async (to, from, next) => {
     routeStore.setSiderClicked(to.name as string)
   }
 
+  isRedirected = false
   return next()
 })
 
