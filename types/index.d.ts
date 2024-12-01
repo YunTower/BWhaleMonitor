@@ -42,7 +42,7 @@ export interface ServerInfoType {
 
 export interface baseConfigType {
   title: string
-  visitor: boolean
+  visitor: boolean | string
   visitor_password: boolean | string
 }
 

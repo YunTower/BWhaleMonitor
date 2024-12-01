@@ -111,7 +111,6 @@ const formValue = ref({
   title: '蓝鲸服务器探针',
   username: '',
   password: '',
-  real_password: '',
 })
 
 const formRules: FormRules = {
@@ -127,19 +126,6 @@ const formRules: FormRules = {
       },
     },
   ],
-  visitor_password: [
-    {
-      trigger: ['change', 'blur'],
-      validator: (rule, value) => {
-        if (formValue.value.visitor && value) {
-          const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
-          if (!passwordRegex.test(value)) {
-            return new Error('访问密码至少包含字母和数字，且长度不小于6位')
-          }
-        }
-      },
-    },
-  ],
   title: [
     {
       required: true,
@@ -150,48 +136,6 @@ const formRules: FormRules = {
         }
         if (value.length < 4 || value.length > 50) {
           return new Error('标题长度需要在4-50位之间')
-        }
-      },
-    },
-  ],
-  username: [
-    {
-      required: true,
-      trigger: ['change', 'blur'],
-      validator: (rule, value) => {
-        if (!value || value == '') {
-          return new Error('管理员账号是必填的')
-        }
-        if (value.length < 8 || length > 50) {
-          return new Error('账号长度需要在8-50位之间')
-        }
-        return true
-      },
-    },
-  ],
-  password: [
-    {
-      required: true,
-      trigger: ['change', 'blur'],
-      validator: (rule, value) => {
-        if (!value || value == '') {
-          return new Error('管理员密码是必填的')
-        }
-      },
-    },
-  ],
-  real_password: [
-    {
-      required: true,
-      trigger: ['change', 'blur'],
-      validator: (rule, value) => {
-        if (!value || value == '') {
-          return new Error('管理员密码是必填的')
-        } else {
-          const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,50}$/
-          if (!passwordRegex.test(value)) {
-            return new Error('密码至少包含字母和数字，且长度在8-50位之间')
-          }
         }
       },
     },
@@ -231,14 +175,18 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
     } else {
       try {
         submitButtonLoading.value = true
-        console.log(formValue.value)
-        let formData = {
-          ...formValue.value,
-          ...{ password: formValue.value.real_password },
+        delete formValue.value.password
+        delete formValue.value.username
+
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
+        if (formValue.value.visitor && !passwordRegex.test(formValue.value.visitor_password)) {
+          message.error('访问密码至少包含字母和数字且不少于6位')
+          return
         }
-        delete formData.real_password
-        console.log(formData)
-        const { code, msg } = await requester.post('/setting/save', formData)
+        if (formValue.value.visitor_password == '') {
+          delete formValue.value.visitor_password
+        }
+        const { code, msg } = await requester.post('/setting/save', formValue.value)
         if (code == 0) {
           message.success('保存成功')
         } else {
