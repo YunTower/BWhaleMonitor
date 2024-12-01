@@ -48,6 +48,6 @@ export interface baseConfigType {
 
 export interface systemConfigType extends baseConfigType {
   username: string
-  password: boolean
+  password: string
   interval: number
 }

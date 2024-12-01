@@ -35,7 +35,7 @@
               :disabled="adminAccountDisabled"
               placeholder=""
             />
-            <n-button style="margin-left: 5px">修改</n-button>
+            <n-button style="margin-left: 5px" @click="EditUserNameModalClose">修改</n-button>
           </n-form-item>
           <n-form-item path="password" label="管理员密码">
             <n-input
@@ -43,7 +43,7 @@
               :disabled="adminPasswordDisabled"
               placeholder="密码不少于6位"
             />
-            <n-button style="margin-left: 5px">修改</n-button>
+            <n-button style="margin-left: 5px" @click="EditPasswordModalClose">修改</n-button>
           </n-form-item>
 
           <n-row :gutter="[0, 24]">
@@ -78,6 +78,16 @@
       </n-tab-pane>
     </n-tabs>
   </n-card>
+  <EditUserName
+    :show-modal="showEditUserNameModal"
+    @edit-success="EditUserNameSuccess"
+    @close="EditUserNameModalClose"
+  />
+  <EditPassword
+    :show-modal="showEditPasswordModal"
+    @edit-success="EditPasswordModalClose"
+    @close="EditPasswordModalClose"
+  />
 </template>
 
 <script setup lang="ts">
@@ -85,10 +95,14 @@ import { onMounted, ref } from 'vue'
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import requester from '@/utils/requester'
 import type { systemConfigType } from '../../../types'
+import EditUserName from '@/components/user/EditUserName.vue'
+import { useCommonStore } from '@/stores/common'
+import EditPassword from '@/components/user/EditPassword.vue'
 
+const { message } = createDiscreteApi(['message'])
+const commonStore = useCommonStore()
 const newVersion = ref('获取中')
 const localVersion = ref('1.0.0')
-const { message } = createDiscreteApi(['message'])
 const formRef = ref<FormInst | null>(null)
 const formValue = ref({
   interval: 5,
@@ -97,6 +111,7 @@ const formValue = ref({
   title: '蓝鲸服务器探针',
   username: '',
   password: '',
+  real_password: '',
 })
 
 const formRules: FormRules = {
@@ -161,6 +176,17 @@ const formRules: FormRules = {
       validator: (rule, value) => {
         if (!value || value == '') {
           return new Error('管理员密码是必填的')
+        }
+      },
+    },
+  ],
+  real_password: [
+    {
+      required: true,
+      trigger: ['change', 'blur'],
+      validator: (rule, value) => {
+        if (!value || value == '') {
+          return new Error('管理员密码是必填的')
         } else {
           const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,50}$/
           if (!passwordRegex.test(value)) {
@@ -175,9 +201,25 @@ const showVisitorPassword = ref(false)
 const adminAccountDisabled = ref(true)
 const adminPasswordDisabled = ref(true)
 const submitButtonLoading = ref(false)
+const showEditUserNameModal = ref(false)
+const showEditPasswordModal = ref(false)
 
 const onVisitorUpdate = (value: boolean) => {
   showVisitorPassword.value = value
+}
+
+const EditUserNameSuccess = (newValue: string) => {
+  formValue.value.username = newValue
+  commonStore.setUserLogin({ ...commonStore.userInfo, ...{ username: newValue } })
+  EditUserNameModalClose()
+}
+
+const EditUserNameModalClose = () => {
+  showEditUserNameModal.value = !showEditUserNameModal.value
+}
+
+const EditPasswordModalClose = () => {
+  showEditPasswordModal.value = !showEditPasswordModal.value
 }
 
 const handleSubmitButtonClick = (e: MouseEvent) => {
@@ -189,7 +231,14 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
     } else {
       try {
         submitButtonLoading.value = true
-        const { code, msg } = await requester.get('/setting/save')
+        console.log(formValue.value)
+        let formData = {
+          ...formValue.value,
+          ...{ password: formValue.value.real_password },
+        }
+        delete formData.real_password
+        console.log(formData)
+        const { code, msg } = await requester.post('/setting/save', formData)
         if (code == 0) {
           message.success('保存成功')
         } else {
@@ -205,22 +254,15 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
 }
 
 onMounted(async () => {
-  let { code, msg, data } = await requester.get(
+  const { code, msg, data } = await requester.get(
     '/setting/get?columns=title,interval,visitor,visitor_password,username,password',
   )
   if (code == 0) {
-    let password
-    if ((data as systemConfigType)?.password == true) {
-      password = '*'.repeat(15)
-    } else {
-      password = ''
-    }
-    // @ts-ignore
     formValue.value = {
       ...(data as systemConfigType),
       ...{
-        password: password,
         visitor_password: (data as systemConfigType)?.visitor_password || '',
+        interval: parseInt((data as systemConfigType).interval, 10),
       },
     }
   } else {
