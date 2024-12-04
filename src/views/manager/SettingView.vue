@@ -175,8 +175,12 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
     } else {
       try {
         submitButtonLoading.value = true
-        delete formValue.value.password
-        delete formValue.value.username
+        if ('password' in formValue.value) {
+          delete formValue.value.password;
+        }
+        if ('username' in formValue.value) {
+          delete formValue.value.username;
+        }
 
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
         if (formValue.value.visitor && !passwordRegex.test(formValue.value.visitor_password)) {

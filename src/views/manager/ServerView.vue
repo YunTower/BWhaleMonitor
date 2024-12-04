@@ -63,7 +63,7 @@ import {
   NTag,
   NBadge,
 } from 'naive-ui'
-import type { ServerInfoType } from '../../../types'
+import type { BaseResponseType, ServerInfoType } from '../../../types'
 
 const pagination = {
   pageSize: 10,
@@ -159,7 +159,7 @@ const columns = [
 ]
 
 const formRef = ref(null)
-const tableData = ref([] as ServerInfoType)
+const tableData = ref(<ServerInfoType[]>[])
 const tableLoading = ref(true)
 const addButtonLoading = ref(false)
 const addModalVisible = ref(false)
@@ -203,7 +203,7 @@ const osSelectOptions = [
     value: 'Other',
   },
 ]
-const rowKey = (rowData: object) => {
+const rowKey = (rowData: ServerInfoType) => {
   return rowData.id
 }
 
@@ -265,38 +265,40 @@ const showAddModal = () => {
 
 const handleSubmitButtonClick = (e: MouseEvent) => {
   e.preventDefault()
-  formRef.value?.validate(async (errors) => {
+  formRef.value?.validate(async (errors: any) => {
     if (errors) {
       message.error(`验证失败（${errors[0][0].message}）`)
       return
-    }
-    try {
-      addButtonLoading.value = true
-      const resp = await requester.get('/server/add')
-      if (resp.code == 0) {
-        message.success('添加成功')
-        addModalVisible.value = false
-      } else {
-        message.error(`添加失败（${resp.message}）`)
+    } else {
+      try {
+        addButtonLoading.value = true
+        const { code, msg, data }: BaseResponseType<ServerInfoType> =
+          await requester.post('/server/add')
+        if (code == 0) {
+          message.success('添加成功')
+          addModalVisible.value = false
+        } else {
+          message.error(`添加失败（${msg}）`)
+        }
+      } catch (error) {
+        message.error(`服务器信息添加失败，发生错误`)
+        addButtonLoading.value = false
       }
-    } catch (error) {
-      message.error(`服务器信息添加失败，发生错误（${error.message}）`)
-    } finally {
-      addButtonLoading.value = false
     }
   })
 }
 
 onMounted(async () => {
   try {
-    const resp = await requester.get('/data/list.json')
-    if (resp.code == 0) {
-      tableData.value = resp.data
+    const { code, msg, data }: BaseResponseType<ServerInfoType[]> =
+      await requester.get('/data/list.json')
+    if (code == 0) {
+      tableData.value = data
     } else {
-      message.error(`拉取服务器列表失败（${resp.message}）`)
+      message.error(`拉取服务器列表失败（${msg}）`)
     }
   } catch (error) {
-    message.error(`拉取服务器列表失败，发生错误（${error.message}）`)
+    message.error(`拉取服务器列表失败，发生错误`)
   } finally {
     tableLoading.value = false
   }
