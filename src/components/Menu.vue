@@ -126,7 +126,7 @@ const menuOptions: MenuOption[] = [
         { default: () => '管理' },
       ),
     key: 'manager',
-    show: isAdminRole,
+    show: isAdminRole.value,
   },
 ]
 
