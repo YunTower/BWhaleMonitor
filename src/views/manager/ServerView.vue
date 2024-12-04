@@ -19,7 +19,7 @@
       <n-form-item path="location" label="服务器位置">
         <n-input v-model:value="formValue.location" placeholder="留空则自动获取" />
       </n-form-item>
-      <n-form-item path="script" label="探针安装脚本">
+      <n-form-item path="script" label="被控安装脚本">
         <n-input v-model:value="formValue.script" type="textarea" disabled />
       </n-form-item>
       <n-row :gutter="[0, 24]">
@@ -38,10 +38,11 @@
   </n-modal>
   <n-card title="服务器管理">
     <n-space class="mb-2">
-      <n-button type="primary" @click="showAddModal">添加</n-button>
+      <n-button type="primary" size="small" @click="showAddModal">添加服务器</n-button>
       <!--      <n-button>删除选中</n-button>-->
     </n-space>
     <n-data-table
+      :row-key="rowKey"
       :scroll-x="1800"
       :loading="tableLoading"
       :columns="columns"
@@ -60,8 +61,9 @@ import {
   NButton,
   NSpace,
   NTag,
+  NBadge,
 } from 'naive-ui'
-import type {ServerInfoType} from "../../../types";
+import type { ServerInfoType } from '../../../types'
 
 const pagination = {
   pageSize: 10,
@@ -79,6 +81,18 @@ const columns = [
   {
     title: '名称',
     key: 'name',
+  },
+  {
+    title: '状态',
+    key: 'status',
+    sorter: 'default',
+    render(row) {
+      if (row.status == 1) {
+        return h(NTag, { type: 'success' }, '正常')
+      } else {
+        return h(NTag, { type: 'error' }, '离线')
+      }
+    },
   },
   {
     title: '系统',
@@ -107,18 +121,6 @@ const columns = [
   {
     title: '上传/下载',
     key: 'network',
-  },
-  {
-    title: '状态',
-    key: 'status',
-    sorter: 'default',
-    render(row) {
-      if (row.status == 1) {
-        return h(NTag, { type: 'success' }, { default: () => '正常' })
-      } else {
-        return h(NTag, { type: 'error' }, { default: () => '离线' })
-      }
-    },
   },
   {
     title: '操作',
@@ -201,6 +203,9 @@ const osSelectOptions = [
     value: 'Other',
   },
 ]
+const rowKey = (rowData: object) => {
+  return rowData.id
+}
 
 const formValue = ref({
   name: '',
