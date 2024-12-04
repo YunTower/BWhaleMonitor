@@ -1,7 +1,7 @@
 <template>
   <div class="menu">
     <n-space class="center">
-      <div class="refresh-time" v-show="name ? name == 'home' : activeKey == 'home'">
+      <div class="refresh-time" v-show="name ? name == 'home' : menuClicked == 'home'">
         <n-popover trigger="hover">
           <template #trigger>
             <n-progress type="circle" :percentage="80" :color="themeVars.successColor">
@@ -11,7 +11,7 @@
           <span>刷新间隔，点击立即刷新</span>
         </n-popover>
       </div>
-      <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" responsive />
+      <n-menu v-model:value="menuClicked" mode="horizontal" :options="menuOptions" responsive />
       <div class="username">
         <n-dropdown :options="dropdownOptions" @select="handleSelect">
           <n-gradient-text type="success" size="15"
@@ -64,7 +64,7 @@
 }
 </style>
 <script setup lang="ts">
-import { h, onMounted, ref } from 'vue'
+import { h, onMounted, computed, ref, watch } from 'vue'
 import { type MenuOption, useThemeVars, createDiscreteApi } from 'naive-ui'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -76,7 +76,6 @@ const routeStore = useRouteStore()
 const commonStore = useCommonStore()
 const { menuClicked } = storeToRefs(routeStore)
 const { isUserLogin, userInfo } = storeToRefs(commonStore)
-const activeKey = ref<string | null>(menuClicked)
 const route = useRoute()
 const router = useRouter()
 const themeVars = useThemeVars()
@@ -104,35 +103,40 @@ const handleSelect = async (key: string | number) => {
   }
 }
 
-const menuOptions: MenuOption[] = [
-  {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: '/',
-        },
-        { default: () => '首页' },
-      ),
-    key: 'home',
-  },
-  {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: '/manager',
-        },
-        { default: () => '管理' },
-      ),
-    key: 'manager',
-    show: isAdminRole.value,
-  },
-]
-
-onMounted(() => {
-  if (commonStore.userInfo?.role == 'admin') {
-    isAdminRole.value = true
-  }
+// 计算属性，动态生成 menuOptions
+const menuOptions = computed(() => {
+  return [
+    {
+      label: () =>
+        h(
+          RouterLink,
+          {
+            to: '/',
+          },
+          { default: () => '首页' },
+        ),
+      key: 'home',
+    },
+    {
+      label: () =>
+        h(
+          RouterLink,
+          {
+            to: '/manager',
+          },
+          { default: () => '管理' },
+        ),
+      key: 'manager',
+      show: isAdminRole.value,
+    },
+  ].filter(option => !option.show || option.show)
 })
+
+watch(
+  userInfo,
+  (newValue) => {
+    isAdminRole.value = newValue?.role == 'admin';
+  },
+  { deep: true, immediate: true },
+)
 </script>
