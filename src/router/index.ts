@@ -109,7 +109,7 @@ router.beforeEach(async (to, from, next) => {
   /**
    * 安装检查&配置获取
    */
-  const { code, data } = await requester.get('/setting/get?columns=title,visitor,visitor_password')
+  const { code, data } = await requester.get('/config/get?columns=title,visitor,visitor_password')
   if (code === 1501) {
     if (to.path === '/install') {
       return next()

@@ -88,7 +88,7 @@ const handleSubmitButtonClick = async (e: MouseEvent) => {
       return
     } else {
       try {
-        const { code, msg, data } = await requester.patch('/setting/edit/username', formValue.value)
+        const { code, msg, data } = await requester.patch('/config/edit/username', formValue.value)
         if (code === 0) {
           message.success('用户名重置成功🎉')
           formValue.value = {

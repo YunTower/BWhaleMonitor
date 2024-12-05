@@ -190,7 +190,7 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
         if (formValue.value.visitor_password == '') {
           delete formValue.value.visitor_password
         }
-        const { code, msg } = await requester.post('/setting/save', formValue.value)
+        const { code, msg } = await requester.post('/config/save', formValue.value)
         if (code == 0) {
           message.success('保存成功')
         } else {
@@ -207,7 +207,7 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
 
 onMounted(async () => {
   const { code, msg, data } = await requester.get(
-    '/setting/get?columns=title,interval,visitor,visitor_password,username,password',
+    '/config/get?columns=title,interval,visitor,visitor_password,username,password',
   )
   if (code == 0) {
     formValue.value = {

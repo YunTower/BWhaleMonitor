@@ -88,7 +88,7 @@ const handleSubmitButtonClick = async (e: MouseEvent) => {
       return
     } else {
       try {
-        const { code, msg, data } = await requester.patch('/setting/edit/password', formValue.value)
+        const { code, msg, data } = await requester.patch('/config/edit/password', formValue.value)
         if (code === 0) {
           message.success('密码重置成功🎉')
           formValue.value = {

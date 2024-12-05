@@ -121,7 +121,7 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
       loading.destroy()
     } else {
       try {
-        const { code, msg } = await requester.post('/setting/install', {
+        const { code, msg } = await requester.post('/config/install', {
           ...formValue.value,
           ...{ password: sha256(formValue.value.password) },
         })
