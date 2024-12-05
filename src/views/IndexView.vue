@@ -55,7 +55,7 @@
 import { onMounted, ref } from 'vue'
 import { createDiscreteApi } from 'naive-ui'
 import requester from '@/utils/requester'
-import type {ServerItemType} from "../../types";
+import type { BaseResponseType, ServerItemType } from '../../types'
 
 const loading = ref(true)
 const serverList = ref([] as ServerItemType[])
@@ -63,14 +63,15 @@ const { message } = createDiscreteApi(['message'])
 
 onMounted(async () => {
   try {
-    const resp = await requester.get('/data/list.json')
-    if (resp.code == 0) {
-      serverList.value = resp.data
+    const { code, msg, data }: BaseResponseType<ServerItemType[]> =
+      await requester.get('/data/list.json')
+    if (code == 0) {
+      serverList.value = data
     } else {
-      message.error(`拉取服务器信息失败（${error.message}）`)
+      message.error(`拉取服务器信息失败（${msg}）`)
     }
   } catch (error) {
-    message.error(`拉取服务器信息失败，发生错误（${error.message}）`)
+    message.error(`拉取服务器信息失败，发生错误`)
   } finally {
     loading.value = false
   }
