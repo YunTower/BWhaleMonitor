@@ -6,7 +6,7 @@
     size="huge"
     :style="{ width: '50%' }"
   >
-    <n-form ref="formRef" :model="formValue" :rules="formRules">
+    <n-form ref="formRef" :model="formValue" :rules="formRules" size="small">
       <n-form-item path="name" label="服务器名称">
         <n-input v-model:value="formValue.name" placeholder="必填，不建议太长" />
       </n-form-item>
@@ -19,16 +19,9 @@
       <n-form-item path="location" label="服务器位置">
         <n-input v-model:value="formValue.location" placeholder="留空则自动获取" />
       </n-form-item>
-      <n-form-item path="script" label="被控通信密钥">
-        <n-input v-model:value="formValue.script" disabled />
-      </n-form-item>
       <n-form-item path="script" label="被控安装脚本">
         <n-input v-model:value="formValue.script" type="textarea" disabled />
       </n-form-item>
-      <ul>
-        <li>节点ws通信地址：</li>
-        <li>节点http通信地址：</li>
-      </ul>
       <n-row :gutter="[0, 24]">
         <n-col :span="24">
           <div style="display: flex; justify-content: flex-end">
@@ -46,7 +39,7 @@
   <n-card title="服务器管理">
     <n-space class="mb-2">
       <n-button type="primary" size="small" @click="showAddModal">添加服务器</n-button>
-      <!--      <n-button>删除选中</n-button>-->
+      <!--      <n-button size="small">删除选中</n-button>-->
     </n-space>
     <n-data-table
       :row-key="rowKey"
@@ -59,9 +52,10 @@
   </n-card>
 </template>
 <style>
-ul{
-  /*显示*/
-
+ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  color: rgb(107 114 128);
 }
 </style>
 <script setup lang="ts">
@@ -74,71 +68,68 @@ import {
   NButton,
   NSpace,
   NTag,
-  NBadge
+  type FormInst,
 } from 'naive-ui'
-import type { BaseResponseType, ServerInfoType } from '../../../types'
+import type {BaseResponseType, ServerInfoType} from '../../../types'
 
 const pagination = {
-  pageSize: 10
+  pageSize: 10,
 }
 
 const columns = [
   {
-    type: 'selection'
+    type: 'selection',
   },
   {
     title: '#',
     key: 'id',
-    sorter: 'default'
+    sorter: 'default',
   },
   {
     title: '名称',
-    key: 'name'
+    key: 'name',
   },
   {
     title: '状态',
     key: 'status',
     sorter: 'default',
-    render(row) {
-      if (row.status == 1) {
+    render(rowData: ServerInfoType) {
+      if (rowData.status == 1) {
         return h(NTag, { type: 'success' }, '正常')
       } else {
         return h(NTag, { type: 'error' }, '离线')
       }
-    }
+    },
   },
   {
     title: '系统',
-    key: 'os'
+    key: 'os',
   },
   {
     title: 'IP',
-    key: 'ip'
+    key: 'ip',
   },
   {
     title: '位置',
-    key: 'location'
+    key: 'location',
   },
   {
     title: 'CPU',
-    key: 'cpu'
+    key: 'cpu',
   },
   {
     title: '内存',
-    key: 'memory'
+    key: 'memory',
   },
   {
-    title: '硬盘',
-    key: 'disk'
-  },
-  {
-    title: '上传/下载',
-    key: 'network'
+    title: '磁盘',
+    key: 'disk',
   },
   {
     title: '操作',
     key: 'action',
     fixed: 'right',
+    width: 135,
     render() {
       return h(
         NSpace,
@@ -151,27 +142,27 @@ const columns = [
                 strong: true,
                 tertiary: true,
                 size: 'small',
-                type: 'error'
+                type: 'error',
               },
-              { default: () => '删除' }
+              { default: () => '删除' },
             ),
             h(
               NButton,
               {
                 strong: true,
                 tertiary: true,
-                size: 'small'
+                size: 'small',
               },
-              { default: () => '修改' }
-            )
-          ]
-        }
+              { default: () => '修改' },
+            ),
+          ],
+        },
       )
-    }
-  }
+    },
+  },
 ]
 
-const formRef = ref(null)
+const formRef = ref(<FormInst | null>null)
 const tableData = ref(<ServerInfoType[]>[])
 const tableLoading = ref(true)
 const addButtonLoading = ref(false)
@@ -181,40 +172,40 @@ const { message } = createDiscreteApi(['message'])
 const osSelectOptions = [
   {
     label: '自动获取',
-    value: 'auto'
+    value: 'auto',
   },
   {
     label: 'Windows Server',
-    value: 'Windows Server'
+    value: 'Windows Server',
   },
   {
     label: 'CentOS',
-    value: 'CentOS'
+    value: 'CentOS',
   },
   {
     label: 'Ubuntu',
-    value: 'Ubuntu'
+    value: 'Ubuntu',
   },
   {
     label: 'Debian',
-    value: 'Debian'
+    value: 'Debian',
   },
   {
     label: 'Alibaba Cloud Linux',
-    value: 'Alibaba Cloud Linux'
+    value: 'Alibaba Cloud Linux',
   },
   {
     label: 'TencentOS',
-    value: 'TencentOS'
+    value: 'TencentOS',
   },
   {
     label: 'Red Hat',
-    value: 'Red Hat'
+    value: 'Red Hat',
   },
   {
     label: 'Other',
-    value: 'Other'
-  }
+    value: 'Other',
+  },
 ]
 const rowKey = (rowData: ServerInfoType) => {
   return rowData.id
@@ -225,15 +216,22 @@ const formValue = ref({
   ip: '',
   os: 'auto',
   location: '',
-  script: ''
+  script: '',
+} as {
+  name: string
+  ip: string
+  os: string
+  location: string
+  script?: string
 })
+
 const formRules: FormRules = {
   name: [
     {
       required: true,
       message: '请输入服务器名称',
-      trigger: ['input', 'blur']
-    }
+      trigger: ['input', 'blur'],
+    },
   ],
   ip: [
     {
@@ -250,26 +248,26 @@ const formRules: FormRules = {
         }
         return true
       },
-      trigger: ['input', 'blur']
-    }
+      trigger: ['input', 'blur'],
+    },
   ],
   os: [
     {
       required: true,
       message: '请选择服务器系统',
-      trigger: ['change', 'blur']
-    }
+      trigger: ['change', 'blur'],
+    },
   ],
   location: [
     {
-      required: false
-    }
+      required: false,
+    },
   ],
   script: [
     {
-      required: false
-    }
-  ]
+      required: false,
+    },
+  ],
 }
 
 const showAddModal = () => {
@@ -284,9 +282,20 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
       return
     } else {
       try {
+        if (formValue.value.location == '') {
+          formValue.value = {
+            ...formValue.value,
+            location: 'auto',
+          }
+        }
+        if ('script' in formValue.value) {
+          delete formValue.value.script
+        }
         addButtonLoading.value = true
-        const { code, msg, data }: BaseResponseType<ServerInfoType> =
-          await requester.post('/server/add')
+        const { code, msg, data }: BaseResponseType<ServerInfoType> = await requester.post(
+          '/server/add',
+          formValue.value,
+        )
         if (code == 0) {
           message.success('添加成功')
           addModalVisible.value = false
@@ -295,6 +304,8 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
         }
       } catch (error) {
         message.error(`服务器信息添加失败，发生错误`)
+        addButtonLoading.value = false
+      } finally {
         addButtonLoading.value = false
       }
     }
