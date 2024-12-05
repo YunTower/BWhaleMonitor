@@ -94,7 +94,7 @@
 import { onMounted, ref } from 'vue'
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import requester from '@/utils/requester'
-import type { systemConfigType } from '../../../types'
+import type { baseConfigType, systemConfigType } from '../../../types'
 import EditUserName from '@/components/user/EditUserName.vue'
 import { useCommonStore } from '@/stores/common'
 import EditPassword from '@/components/user/EditPassword.vue'
@@ -176,10 +176,10 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
       try {
         submitButtonLoading.value = true
         if ('password' in formValue.value) {
-          delete formValue.value.password;
+          delete formValue.value.password
         }
         if ('username' in formValue.value) {
-          delete formValue.value.username;
+          delete formValue.value.username
         }
 
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
@@ -206,15 +206,15 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
 }
 
 onMounted(async () => {
-  const { code, msg, data } = await requester.get(
+  const { code, msg, data }: baseConfigType<systemConfigType> = await requester.get(
     '/config/get?columns=title,interval,visitor,visitor_password,username,password',
   )
   if (code == 0) {
     formValue.value = {
-      ...(data as systemConfigType),
+      ...data,
       ...{
-        visitor_password: (data as systemConfigType)?.visitor_password || '',
-        interval: parseInt((data as systemConfigType).interval, 10),
+        visitor_password: data.visitor_password || '',
+        interval: parseInt(data.interval as string),
       },
     }
   } else {
