@@ -48,6 +48,7 @@
 <style scoped>
 :deep(.n-card) {
   background-color: #fff;
+  margin: 0;
 }
 </style>
 <script lang="ts" setup>
@@ -55,8 +56,6 @@ import { onMounted, ref } from 'vue'
 import { createDiscreteApi } from 'naive-ui'
 import requester from '@/utils/requester'
 import type {ServerItemType} from "../../types";
-
-
 
 const loading = ref(true)
 const serverList = ref([] as ServerItemType[])
