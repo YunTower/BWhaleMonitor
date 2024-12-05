@@ -31,3 +31,8 @@
 .n-collapse .n-collapse-item {
     margin: 0 !important;
 }
+
+.n-card,.n-modal {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}

@@ -19,9 +19,16 @@
       <n-form-item path="location" label="服务器位置">
         <n-input v-model:value="formValue.location" placeholder="留空则自动获取" />
       </n-form-item>
+      <n-form-item path="script" label="被控通信密钥">
+        <n-input v-model:value="formValue.script" disabled />
+      </n-form-item>
       <n-form-item path="script" label="被控安装脚本">
         <n-input v-model:value="formValue.script" type="textarea" disabled />
       </n-form-item>
+      <ul>
+        <li>节点ws通信地址：</li>
+        <li>节点http通信地址：</li>
+      </ul>
       <n-row :gutter="[0, 24]">
         <n-col :span="24">
           <div style="display: flex; justify-content: flex-end">
@@ -51,6 +58,12 @@
     />
   </n-card>
 </template>
+<style>
+ul{
+  /*显示*/
+
+}
+</style>
 <script setup lang="ts">
 import { onMounted, ref, h } from 'vue'
 import requester from '@/utils/requester'
@@ -61,26 +74,26 @@ import {
   NButton,
   NSpace,
   NTag,
-  NBadge,
+  NBadge
 } from 'naive-ui'
 import type { BaseResponseType, ServerInfoType } from '../../../types'
 
 const pagination = {
-  pageSize: 10,
+  pageSize: 10
 }
 
 const columns = [
   {
-    type: 'selection',
+    type: 'selection'
   },
   {
     title: '#',
     key: 'id',
-    sorter: 'default',
+    sorter: 'default'
   },
   {
     title: '名称',
-    key: 'name',
+    key: 'name'
   },
   {
     title: '状态',
@@ -92,35 +105,35 @@ const columns = [
       } else {
         return h(NTag, { type: 'error' }, '离线')
       }
-    },
+    }
   },
   {
     title: '系统',
-    key: 'os',
+    key: 'os'
   },
   {
     title: 'IP',
-    key: 'ip',
+    key: 'ip'
   },
   {
     title: '位置',
-    key: 'location',
+    key: 'location'
   },
   {
     title: 'CPU',
-    key: 'cpu',
+    key: 'cpu'
   },
   {
     title: '内存',
-    key: 'memory',
+    key: 'memory'
   },
   {
     title: '硬盘',
-    key: 'disk',
+    key: 'disk'
   },
   {
     title: '上传/下载',
-    key: 'network',
+    key: 'network'
   },
   {
     title: '操作',
@@ -138,24 +151,24 @@ const columns = [
                 strong: true,
                 tertiary: true,
                 size: 'small',
-                type: 'error',
+                type: 'error'
               },
-              { default: () => '删除' },
+              { default: () => '删除' }
             ),
             h(
               NButton,
               {
                 strong: true,
                 tertiary: true,
-                size: 'small',
+                size: 'small'
               },
-              { default: () => '修改' },
-            ),
-          ],
-        },
+              { default: () => '修改' }
+            )
+          ]
+        }
       )
-    },
-  },
+    }
+  }
 ]
 
 const formRef = ref(null)
@@ -168,40 +181,40 @@ const { message } = createDiscreteApi(['message'])
 const osSelectOptions = [
   {
     label: '自动获取',
-    value: 'auto',
+    value: 'auto'
   },
   {
     label: 'Windows Server',
-    value: 'Windows Server',
+    value: 'Windows Server'
   },
   {
     label: 'CentOS',
-    value: 'CentOS',
+    value: 'CentOS'
   },
   {
     label: 'Ubuntu',
-    value: 'Ubuntu',
+    value: 'Ubuntu'
   },
   {
     label: 'Debian',
-    value: 'Debian',
+    value: 'Debian'
   },
   {
     label: 'Alibaba Cloud Linux',
-    value: 'Alibaba Cloud Linux',
+    value: 'Alibaba Cloud Linux'
   },
   {
     label: 'TencentOS',
-    value: 'TencentOS',
+    value: 'TencentOS'
   },
   {
     label: 'Red Hat',
-    value: 'Red Hat',
+    value: 'Red Hat'
   },
   {
     label: 'Other',
-    value: 'Other',
-  },
+    value: 'Other'
+  }
 ]
 const rowKey = (rowData: ServerInfoType) => {
   return rowData.id
@@ -212,15 +225,15 @@ const formValue = ref({
   ip: '',
   os: 'auto',
   location: '',
-  script: '',
+  script: ''
 })
 const formRules: FormRules = {
   name: [
     {
       required: true,
       message: '请输入服务器名称',
-      trigger: ['input', 'blur'],
-    },
+      trigger: ['input', 'blur']
+    }
   ],
   ip: [
     {
@@ -237,26 +250,26 @@ const formRules: FormRules = {
         }
         return true
       },
-      trigger: ['input', 'blur'],
-    },
+      trigger: ['input', 'blur']
+    }
   ],
   os: [
     {
       required: true,
       message: '请选择服务器系统',
-      trigger: ['change', 'blur'],
-    },
+      trigger: ['change', 'blur']
+    }
   ],
   location: [
     {
-      required: false,
-    },
+      required: false
+    }
   ],
   script: [
     {
-      required: false,
-    },
-  ],
+      required: false
+    }
+  ]
 }
 
 const showAddModal = () => {
