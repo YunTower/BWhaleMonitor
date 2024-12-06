@@ -27,7 +27,6 @@
     </template>
   </n-modal>
 </template>
-
 <script setup lang="ts">
 import { ref } from 'vue'
 import { createDiscreteApi } from 'naive-ui'
