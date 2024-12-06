@@ -51,3 +51,9 @@ export interface systemConfigType extends baseConfigType {
   password: string
   interval: number
 }
+
+export interface missingExtension {
+  name: string
+  status: boolean
+  type: string
+}
