@@ -7,6 +7,7 @@
     style="width: 600px"
     size="huge"
     :bordered="true"
+    :closable="false"
     positive-text="确认"
     negative-text="算了"
   >
