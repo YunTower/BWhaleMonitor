@@ -1,9 +1,9 @@
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import axios, { type AxiosError, type AxiosResponse } from 'axios'
-import { createDiscreteApi } from 'naive-ui'
+import { useNotification,createDiscreteApi } from 'naive-ui'
 import type { BaseResponseType } from '@/../types'
 
-const { message } = createDiscreteApi(['message'])
+const { notification } = createDiscreteApi(['notification'])
 const requester: AxiosInstance = axios.create({
   // 设置基础路径
   baseURL: '/api',
@@ -30,30 +30,32 @@ requester.interceptors.response.use(
     return baseResponse
   },
   (error: AxiosError) => {
-    if (error.response?.status === 404) {
-      message.error('404 页面/接口不存在')
-    }
-    if (error.response?.status === 500) {
-      message.error('服务器错误，请联系管理员修复')
-    }
-    if (error.response?.status === 429) {
-      message.error('请求过于频繁，请稍后再试！')
+    if (error.response) {
+      if (error.response.status === 404) {
+        notification?.error?.({ content: '404 页面/接口不存在' })
+      }
+
+      if (error.response.status === 429) {
+        notification?.error?.({ content: '请求过于频繁，请稍后再试！' })
+      }
+    } else {
+      if (
+        error.code === 'ECONNABORTED' ||
+        error.message === 'Network Error' ||
+        error.message.includes('timeout')
+      ) {
+        notification?.error?.({ content: '网络异常，请求超时！' })
+      }
     }
 
-    if (
-      error.code === 'ECONNABORTED' ||
-      error.message === 'Network Error' ||
-      error.message.includes('timeout')
-    ) {
-      message.error('网络异常，请求超时！')
-    }
-
+    // 构建基础响应对象
     const baseResponse: BaseResponseType<object> = {
       code: (error.response?.data as { code: number })?.code || -1,
       data: (error.response?.data as { data: object })?.data || null,
       msg: (error.response?.data as { msg: string })?.msg || '未知错误',
       error,
     }
+
     return baseResponse
   },
 )
