@@ -111,14 +111,23 @@ const columns = [
   {
     title: 'CPU',
     key: 'cpu',
+    render(rowData: ServerInfoType) {
+      return `${rowData.cpu} 核心`
+    },
   },
   {
     title: '内存',
     key: 'memory',
+    render(rowData: ServerInfoType) {
+      return `${rowData.memory} MB`
+    },
   },
   {
     title: '磁盘',
     key: 'disk',
+    render(rowData: ServerInfoType) {
+      return `${rowData.disk} GB`
+    },
   },
   {
     title: '操作',
