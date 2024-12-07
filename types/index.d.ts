@@ -36,7 +36,7 @@ export interface ServerInfoType {
   cpu: number
   memory: number
   disk: number
-  network: string
+  uptime: string
   status: number
 }
 
@@ -56,4 +56,12 @@ export interface missingExtension {
   name: string
   status: boolean
   type: string
+}
+
+export interface Paginate<T> {
+  current_page: number
+  limit: number
+  total: number
+  total_page: number
+  data: T
 }

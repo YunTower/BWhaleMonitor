@@ -42,11 +42,12 @@
       <!--      <n-button size="small">删除选中</n-button>-->
     </n-space>
     <n-data-table
+      remote
       :row-key="rowKey"
       :scroll-x="1800"
       :loading="tableLoading"
       :columns="columns"
-      :data="tableData"
+      :data="tableData.data"
       :pagination="pagination"
     />
   </n-card>
@@ -59,7 +60,7 @@ ul {
 }
 </style>
 <script setup lang="ts">
-import { onMounted, ref, h } from 'vue'
+import { onMounted, ref, h, reactive, computed } from 'vue'
 import requester from '@/utils/requester'
 import {
   createDiscreteApi,
@@ -70,11 +71,7 @@ import {
   NTag,
   type FormInst,
 } from 'naive-ui'
-import type {BaseResponseType, ServerInfoType} from '../../../types'
-
-const pagination = {
-  pageSize: 10,
-}
+import type { BaseResponseType, Paginate, ServerInfoType } from '../../../types'
 
 const columns = [
   {
@@ -94,11 +91,9 @@ const columns = [
     key: 'status',
     sorter: 'default',
     render(rowData: ServerInfoType) {
-      if (rowData.status == 1) {
-        return h(NTag, { type: 'success' }, '正常')
-      } else {
-        return h(NTag, { type: 'error' }, '离线')
-      }
+      return rowData.status === 1
+        ? h(NTag, { type: 'success' }, () => '正常')
+        : h(NTag, { type: 'error' }, () => '离线')
     },
   },
   {
@@ -130,7 +125,7 @@ const columns = [
     key: 'action',
     fixed: 'right',
     width: 135,
-    render() {
+    render: () => {
       return h(
         NSpace,
         {},
@@ -163,11 +158,46 @@ const columns = [
 ]
 
 const formRef = ref(<FormInst | null>null)
-const tableData = ref(<ServerInfoType[]>[])
+const tableData = ref(<Paginate<ServerInfoType[]>>{})
 const tableLoading = ref(true)
 const addButtonLoading = ref(false)
 const addModalVisible = ref(false)
 const { message } = createDiscreteApi(['message'])
+const pagination = computed(() => ({
+  pageSize: tableData.value.limit,
+  pageSizes: [
+    {
+      label: '10 / 页',
+      value: 10,
+    },
+    {
+      label: '15 / 页',
+      value: 15,
+    },
+    {
+      label: '20 / 页',
+      value: 20,
+    },
+    {
+      label: '25 / 页',
+      value: 25,
+    },
+    {
+      label: '50 / 页',
+      value: 50,
+    },
+  ],
+  pageCount: tableData.value.total_page,
+  page: tableData.value.current_page,
+  itemCount: tableData.value.total,
+  showSizePicker: true,
+  onUpdatePage: (page: number) => {
+    requestData(page)
+  },
+  onUpdatePageSize: (pageSize: number) => {
+    requestData(1, pageSize)
+  },
+}))
 
 const osSelectOptions = [
   {
@@ -312,10 +342,11 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
   })
 }
 
-onMounted(async () => {
+const requestData = async (page: number = 1, limit: number = 10) => {
   try {
-    const { code, msg, data }: BaseResponseType<ServerInfoType[]> =
-      await requester.get('/data/list.json')
+    const { code, msg, data }: BaseResponseType<Paginate<ServerInfoType[]>> = await requester.get(
+      `/server/get?view=list&page=${page}&limit=${limit}`,
+    )
     if (code == 0) {
       tableData.value = data
     } else {
@@ -326,5 +357,9 @@ onMounted(async () => {
   } finally {
     tableLoading.value = false
   }
+}
+
+onMounted(() => {
+  requestData()
 })
 </script>
