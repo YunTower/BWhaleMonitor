@@ -11,7 +11,6 @@
       "cpu": 3,
       "memory": 1948,
       "disk": 34,
-      "network": "561/99",
       "status": 1
     },
     {
@@ -23,7 +22,6 @@
       "cpu": 9,
       "memory": 3738,
       "disk": 38,
-      "network": "246/111",
       "status": 0
     },
     {
@@ -35,7 +33,6 @@
       "cpu": 5,
       "memory": 1748,
       "disk": 50,
-      "network": "299/165",
       "status": 1
     },
     {
@@ -47,7 +44,6 @@
       "cpu": 4,
       "memory": 2634,
       "disk": 65,
-      "network": "454/62",
       "status": 0
     },
     {
@@ -59,7 +55,6 @@
       "cpu": 6,
       "memory": 2705,
       "disk": 59,
-      "network": "593/129",
       "status": 0
     },
     {
@@ -71,7 +66,6 @@
       "cpu": 6,
       "memory": 3547,
       "disk": 47,
-      "network": "408/110",
       "status": 1
     },
     {
@@ -83,7 +77,6 @@
       "cpu": 6,
       "memory": 1025,
       "disk": 69,
-      "network": "490/166",
       "status": 0
     },
     {
@@ -95,7 +88,6 @@
       "cpu": 5,
       "memory": 1834,
       "disk": 43,
-      "network": "556/94",
       "status": 1
     },
     {
@@ -107,7 +99,6 @@
       "cpu": 4,
       "memory": 1381,
       "disk": 25,
-      "network": "179/140",
       "status": 1
     },
     {
@@ -119,7 +110,6 @@
       "cpu": 6,
       "memory": 2790,
       "disk": 58,
-      "network": "444/119",
       "status": 0
     },
     {
@@ -131,7 +121,6 @@
       "cpu": 6,
       "memory": 2535,
       "disk": 44,
-      "network": "108/61",
       "status": 0
     },
     {
@@ -143,7 +132,6 @@
       "cpu": 9,
       "memory": 4085,
       "disk": 32,
-      "network": "591/128",
       "status": 0
     },
     {
@@ -155,7 +143,6 @@
       "cpu": 3,
       "memory": 3338,
       "disk": 42,
-      "network": "486/68",
       "status": 1
     },
     {
@@ -167,7 +154,6 @@
       "cpu": 7,
       "memory": 3890,
       "disk": 57,
-      "network": "119/89",
       "status": 0
     },
     {
@@ -179,7 +165,6 @@
       "cpu": 5,
       "memory": 2350,
       "disk": 39,
-      "network": "240/79",
       "status": 0
     },
     {
@@ -191,7 +176,6 @@
       "cpu": 2,
       "memory": 2842,
       "disk": 60,
-      "network": "504/168",
       "status": 0
     },
     {
@@ -203,7 +187,6 @@
       "cpu": 7,
       "memory": 1620,
       "disk": 47,
-      "network": "440/69",
       "status": 0
     },
     {
@@ -215,7 +198,6 @@
       "cpu": 5,
       "memory": 3971,
       "disk": 37,
-      "network": "332/129",
       "status": 1
     },
     {
@@ -227,7 +209,6 @@
       "cpu": 8,
       "memory": 2595,
       "disk": 56,
-      "network": "438/136",
       "status": 1
     },
     {
@@ -239,7 +220,6 @@
       "cpu": 7,
       "memory": 2815,
       "disk": 27,
-      "network": "476/130",
       "status": 1
     },
     {
@@ -251,7 +231,6 @@
       "cpu": 9,
       "memory": 1564,
       "disk": 30,
-      "network": "467/55",
       "status": 1
     },
     {
@@ -263,7 +242,6 @@
       "cpu": 2,
       "memory": 2716,
       "disk": 50,
-      "network": "579/197",
       "status": 1
     },
     {
@@ -275,7 +253,6 @@
       "cpu": 9,
       "memory": 1948,
       "disk": 51,
-      "network": "424/52",
       "status": 0
     },
     {
@@ -287,7 +264,6 @@
       "cpu": 5,
       "memory": 2927,
       "disk": 33,
-      "network": "518/158",
       "status": 1
     },
     {
@@ -299,7 +275,6 @@
       "cpu": 6,
       "memory": 2548,
       "disk": 36,
-      "network": "159/184",
       "status": 0
     },
     {
@@ -311,7 +286,6 @@
       "cpu": 3,
       "memory": 3424,
       "disk": 35,
-      "network": "536/191",
       "status": 1
     },
     {
@@ -323,7 +297,6 @@
       "cpu": 2,
       "memory": 4016,
       "disk": 39,
-      "network": "549/188",
       "status": 1
     },
     {
@@ -335,7 +308,6 @@
       "cpu": 3,
       "memory": 1937,
       "disk": 44,
-      "network": "395/131",
       "status": 0
     },
     {
@@ -347,7 +319,6 @@
       "cpu": 8,
       "memory": 1982,
       "disk": 22,
-      "network": "328/139",
       "status": 1
     },
     {
@@ -359,7 +330,6 @@
       "cpu": 3,
       "memory": 1662,
       "disk": 35,
-      "network": "560/115",
       "status": 0
     },
     {
@@ -371,7 +341,6 @@
       "cpu": 2,
       "memory": 2853,
       "disk": 50,
-      "network": "113/84",
       "status": 0
     },
     {
@@ -383,7 +352,6 @@
       "cpu": 4,
       "memory": 2516,
       "disk": 54,
-      "network": "538/122",
       "status": 1
     },
     {
@@ -395,7 +363,6 @@
       "cpu": 7,
       "memory": 3239,
       "disk": 67,
-      "network": "321/96",
       "status": 1
     },
     {
@@ -407,7 +374,6 @@
       "cpu": 3,
       "memory": 2740,
       "disk": 20,
-      "network": "364/149",
       "status": 0
     },
     {
@@ -419,7 +385,6 @@
       "cpu": 7,
       "memory": 3674,
       "disk": 28,
-      "network": "344/163",
       "status": 1
     },
     {
@@ -431,7 +396,6 @@
       "cpu": 6,
       "memory": 3260,
       "disk": 38,
-      "network": "153/71",
       "status": 1
     },
     {
@@ -443,7 +407,6 @@
       "cpu": 9,
       "memory": 3051,
       "disk": 53,
-      "network": "380/131",
       "status": 1
     },
     {
@@ -455,7 +418,6 @@
       "cpu": 5,
       "memory": 1534,
       "disk": 33,
-      "network": "226/90",
       "status": 1
     },
     {
@@ -467,7 +429,6 @@
       "cpu": 3,
       "memory": 1907,
       "disk": 39,
-      "network": "565/127",
       "status": 0
     },
     {
@@ -479,7 +440,6 @@
       "cpu": 6,
       "memory": 3389,
       "disk": 20,
-      "network": "299/100",
       "status": 0
     },
     {
@@ -491,7 +451,6 @@
       "cpu": 4,
       "memory": 2387,
       "disk": 44,
-      "network": "377/154",
       "status": 1
     },
     {
@@ -503,7 +462,6 @@
       "cpu": 5,
       "memory": 2592,
       "disk": 38,
-      "network": "220/99",
       "status": 1
     },
     {
@@ -515,7 +473,6 @@
       "cpu": 3,
       "memory": 1435,
       "disk": 64,
-      "network": "113/91",
       "status": 1
     },
     {
@@ -527,7 +484,6 @@
       "cpu": 2,
       "memory": 3331,
       "disk": 64,
-      "network": "157/112",
       "status": 1
     },
     {
@@ -539,7 +495,6 @@
       "cpu": 9,
       "memory": 2196,
       "disk": 23,
-      "network": "576/93",
       "status": 1
     }
   ]

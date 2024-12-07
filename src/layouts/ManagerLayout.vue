@@ -44,6 +44,10 @@
 :deep(.n-layout-scroll-container .content) {
   padding: 0;
 }
+
+:deep(.n-card) {
+  margin-top: 0 !important;
+}
 </style>
 <script setup lang="ts">
 import Menu from '@/components/Menu.vue'
