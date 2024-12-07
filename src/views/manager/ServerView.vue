@@ -60,7 +60,7 @@ ul {
 }
 </style>
 <script setup lang="ts">
-import { onMounted, ref, h, reactive, computed } from 'vue'
+import {onMounted, ref, h, computed} from 'vue'
 import requester from '@/utils/requester'
 import {
   createDiscreteApi,
@@ -71,11 +71,18 @@ import {
   NTag,
   type FormInst,
 } from 'naive-ui'
-import type { BaseResponseType, Paginate, ServerInfoType } from '../../../types'
+import type {Paginate, ServerInfoType} from '../../../types'
+import RowDetails from "@/components/manager/RowDetails.vue";
 
 const columns = [
   {
-    type: 'selection',
+    type: 'expand',
+    expandable: () => true,
+    renderExpand: (rowData: ServerInfoType) => {
+      return h(RowDetails,{
+        server: rowData
+      })
+    },
   },
   {
     title: '#',
@@ -92,8 +99,8 @@ const columns = [
     sorter: 'default',
     render(rowData: ServerInfoType) {
       return rowData.status === 1
-        ? h(NTag, { type: 'success' }, () => '正常')
-        : h(NTag, { type: 'error' }, () => '离线')
+        ? h(NTag, {type: 'success'}, () => '正常')
+        : h(NTag, {type: 'error'}, () => '离线')
     },
   },
   {
@@ -148,7 +155,7 @@ const columns = [
                 size: 'small',
                 type: 'error',
               },
-              { default: () => '删除' },
+              {default: () => '删除'},
             ),
             h(
               NButton,
@@ -157,7 +164,7 @@ const columns = [
                 tertiary: true,
                 size: 'small',
               },
-              { default: () => '修改' },
+              {default: () => '修改'},
             ),
           ],
         },
@@ -166,49 +173,50 @@ const columns = [
   },
 ]
 
-const formRef = ref(<FormInst | null>null)
+const formRef = ref(<FormInst | null > null
+)
 const tableData = ref(<Paginate<ServerInfoType[]>>{})
-const tableLoading = ref(true)
-const addButtonLoading = ref(false)
-const addModalVisible = ref(false)
-const { message } = createDiscreteApi(['message'])
-const pagination = computed(() => ({
-  pageSize: tableData.value.limit,
-  pageSizes: [
-    {
-      label: '10 / 页',
-      value: 10,
-    },
-    {
-      label: '15 / 页',
-      value: 15,
-    },
-    {
-      label: '20 / 页',
-      value: 20,
-    },
-    {
-      label: '25 / 页',
-      value: 25,
-    },
-    {
-      label: '50 / 页',
-      value: 50,
-    },
-  ],
-  pageCount: tableData.value.total_page,
-  page: tableData.value.current_page,
-  itemCount: tableData.value.total,
-  showSizePicker: true,
-  onUpdatePage: (page: number) => {
+  const tableLoading = ref(true)
+  const addButtonLoading = ref(false)
+  const addModalVisible = ref(false)
+  const {message} = createDiscreteApi(['message'])
+  const pagination = computed(() => ({
+    pageSize: tableData.value.limit,
+    pageSizes: [
+  {
+    label: '10 / 页',
+    value: 10,
+  },
+  {
+    label: '15 / 页',
+    value: 15,
+  },
+  {
+    label: '20 / 页',
+    value: 20,
+  },
+  {
+    label: '25 / 页',
+    value: 25,
+  },
+  {
+    label: '50 / 页',
+    value: 50,
+  },
+    ],
+    pageCount: tableData.value.total_page,
+    page: tableData.value.current_page,
+    itemCount: tableData.value.total,
+    showSizePicker: true,
+    onUpdatePage: (page: number) => {
     requestData(page)
   },
-  onUpdatePageSize: (pageSize: number) => {
+    onUpdatePageSize: (pageSize: number) => {
     requestData(1, pageSize)
   },
-}))
+  }))
 
-const osSelectOptions = [
+  const osSelectOptions = [
   {
     label: '自动获取',
     value: 'auto',
@@ -245,130 +253,130 @@ const osSelectOptions = [
     label: 'Other',
     value: 'Other',
   },
-]
-const rowKey = (rowData: ServerInfoType) => {
-  return rowData.id
-}
+  ]
+  const rowKey = (rowData: ServerInfoType) => {
+    return rowData.id
+  }
 
-const formValue = ref({
-  name: '',
-  ip: '',
-  os: 'auto',
-  location: '',
-  script: '',
-} as {
-  name: string
-  ip: string
-  os: string
-  location: string
-  script?: string
-})
-
-const formRules: FormRules = {
-  name: [
-    {
-      required: true,
-      message: '请输入服务器名称',
-      trigger: ['input', 'blur'],
-    },
-  ],
-  ip: [
-    {
-      required: true,
-      validator(rule: FormItemRule, value: string) {
-        if (!value) {
-          return new Error('IP是必填的')
-        } else {
-          const ipv4Regex =
-            /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-          if (!ipv4Regex.test(value)) {
-            return new Error('请输入正确的IPv4地址')
-          }
-        }
-        return true
-      },
-      trigger: ['input', 'blur'],
-    },
-  ],
-  os: [
-    {
-      required: true,
-      message: '请选择服务器系统',
-      trigger: ['change', 'blur'],
-    },
-  ],
-  location: [
-    {
-      required: false,
-    },
-  ],
-  script: [
-    {
-      required: false,
-    },
-  ],
-}
-
-const showAddModal = () => {
-  addModalVisible.value = !addModalVisible.value
-}
-
-const handleSubmitButtonClick = (e: MouseEvent) => {
-  e.preventDefault()
-  formRef.value?.validate(async (errors: any) => {
-    if (errors) {
-      message.error(`验证失败（${errors[0][0].message}）`)
-      return
-    } else {
-      try {
-        if (formValue.value.location == '') {
-          formValue.value = {
-            ...formValue.value,
-            location: 'auto',
-          }
-        }
-        if ('script' in formValue.value) {
-          delete formValue.value.script
-        }
-        addButtonLoading.value = true
-        const { code, msg, data }: BaseResponseType<ServerInfoType> = await requester.post(
-          '/server/add',
-          formValue.value,
-        )
-        if (code == 0) {
-          message.success('添加成功')
-          addModalVisible.value = false
-        } else {
-          message.error(`添加失败（${msg}）`)
-        }
-      } catch (error) {
-        message.error(`服务器信息添加失败，发生错误`)
-        addButtonLoading.value = false
-      } finally {
-        addButtonLoading.value = false
-      }
-    }
+  const formValue = ref({
+    name: '',
+    ip: '',
+    os: 'auto',
+    location: '',
+    script: '',
+  } as {
+    name: string
+    ip: string
+    os: string
+    location: string
+    script?: string
   })
-}
 
-const requestData = async (page: number = 1, limit: number = 10) => {
-  try {
-    const { code, msg, data }: BaseResponseType<Paginate<ServerInfoType[]>> = await requester.get(
-      `/server/get?view=list&page=${page}&limit=${limit}`,
+  const formRules: FormRules = {
+    name: [
+  {
+    required: true,
+    message: '请输入服务器名称',
+    trigger: ['input', 'blur'],
+  },
+    ],
+    ip: [
+  {
+    required: true,
+    validator(rule: FormItemRule, value: string) {
+    if (!value) {
+    return new Error('IP是必填的')
+  } else {
+    const ipv4Regex =
+    /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+    if (!ipv4Regex.test(value)) {
+    return new Error('请输入正确的IPv4地址')
+  }
+  }
+    return true
+  },
+    trigger: ['input', 'blur'],
+  },
+    ],
+    os: [
+  {
+    required: true,
+    message: '请选择服务器系统',
+    trigger: ['change', 'blur'],
+  },
+    ],
+    location: [
+  {
+    required: false,
+  },
+    ],
+    script: [
+  {
+    required: false,
+  },
+    ],
+  }
+
+  const showAddModal = () => {
+    addModalVisible.value = !addModalVisible.value
+  }
+
+  const handleSubmitButtonClick = (e: MouseEvent) => {
+    e.preventDefault()
+    formRef.value?.validate(async (errors: any) => {
+    if (errors) {
+    message.error(`验证失败（${errors[0][0].message}）`)
+    return
+  } else {
+    try {
+    if (formValue.value.location == '') {
+    formValue.value = {
+    ...formValue.value,
+    location: 'auto',
+  }
+  }
+    if ('script' in formValue.value) {
+    delete formValue.value.script
+  }
+    addButtonLoading.value = true
+    const {code, msg, data}: BaseResponseType<ServerInfoType> = await requester.post(
+    '/server/add',
+    formValue.value,
     )
     if (code == 0) {
-      tableData.value = data
-    } else {
-      message.error(`拉取服务器列表失败（${msg}）`)
-    }
+    message.success('添加成功')
+    addModalVisible.value = false
+  } else {
+    message.error(`添加失败（${msg}）`)
+  }
+  } catch (error) {
+    message.error(`服务器信息添加失败，发生错误`)
+    addButtonLoading.value = false
+  } finally {
+    addButtonLoading.value = false
+  }
+  }
+  })
+  }
+
+  const requestData = async (page: number = 1, limit: number = 10) => {
+    try {
+    const {code, msg, data}: BaseResponseType<Paginate<ServerInfoType[]>> = await requester.get(
+    `/server/get?view=list&page=${page}&limit=${limit}`,
+    )
+    if (code == 0) {
+    tableData.value = data
+  } else {
+    message.error(`拉取服务器列表失败（${msg}）`)
+  }
   } catch (error) {
     message.error(`拉取服务器列表失败，发生错误`)
   } finally {
     tableLoading.value = false
   }
-}
+  }
 
-onMounted(() => {
-  requestData()
-})
+  onMounted(() => {
+    requestData()
+  })
 </script>
