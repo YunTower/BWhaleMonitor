@@ -1,32 +1,32 @@
 <template>
-  <n-descriptions label-placement="top" title="基础信息">
-    <n-descriptions-item>
-      <template #label> 早餐</template>
-      苹果
-    </n-descriptions-item>
-    <n-descriptions-item label="早午餐"> 苹果</n-descriptions-item>
-    <n-descriptions-item label="午餐"> 苹果</n-descriptions-item>
-    <n-descriptions-item label="晚餐" :span="2">
-      两个<br />
-      苹果
-    </n-descriptions-item>
-    <n-descriptions-item label="夜宵"> 苹果</n-descriptions-item>
-  </n-descriptions>
-  <n-descriptions label-placement="top" title="实时负载"></n-descriptions>
-  <n-descriptions label-placement="top" title="实时网络">
-    <n-descriptions-item>
-      <div ref="networkRef" style="height: 500px;width: 100%"></div>
-    </n-descriptions-item>
-  </n-descriptions>
+  <div class="space-y-4">
+    <n-descriptions label-placement="left" title="基础信息">
+      <n-descriptions-item label="名称"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="系统"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="状态"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="IP"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="位置"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="CPU"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="内存"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="SWAP"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="磁盘1"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="磁盘2"> 苹果</n-descriptions-item>
+      <n-descriptions-item label="磁盘3"> 苹果</n-descriptions-item>
+    </n-descriptions>
+    <n-descriptions title="负载状态">
+      <n-descriptions-item>
+        <div ref="networkRef" style="height: 300px; width: 100%"></div>
+      </n-descriptions-item>
+    </n-descriptions>
+    <n-descriptions title="网络状态">
+      <n-descriptions-item>
+        <!--      <div ref="networkRef" style="height: 500px; width: 100%"></div>-->
+      </n-descriptions-item>
+    </n-descriptions>
+  </div>
 </template>
 <script setup lang="ts">
 import type { ServerItemType } from '../../../types'
-
-const props = defineProps<{
-  server: ServerItemType
-}>()
-const networkRef = ref(null)
-
 import * as echarts from 'echarts/core'
 import {
   TitleComponent,
@@ -44,6 +44,11 @@ import { LineChart, LineSeriesOption } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import { onMounted, ref } from 'vue'
+
+const props = defineProps<{
+  server: ServerItemType
+}>()
+const networkRef = ref(null)
 
 echarts.use([
   TitleComponent,
@@ -66,7 +71,6 @@ type EChartsOption = echarts.ComposeOption<
 >
 
 onMounted(() => {
-  console.log(networkRef.value)
   const myChart = echarts.init(networkRef.value)!
   let option: EChartsOption
 
