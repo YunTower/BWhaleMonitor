@@ -1,15 +1,15 @@
 <template>
-  <div class="space-y-4">
-    <n-descriptions label-placement="left" title="基础信息">
-      <n-descriptions-item label="名称"> 苹果</n-descriptions-item>
-      <n-descriptions-item label="系统"> 苹果</n-descriptions-item>
-      <n-descriptions-item label="状态"> 苹果</n-descriptions-item>
-      <n-descriptions-item label="IP"> 苹果</n-descriptions-item>
-      <n-descriptions-item label="位置"> 苹果</n-descriptions-item>
-      <n-descriptions-item label="CPU"> 苹果</n-descriptions-item>
-      <n-descriptions-item label="内存"> 苹果</n-descriptions-item>
-      <n-descriptions-item label="SWAP"> 苹果</n-descriptions-item>
-      <n-descriptions-item label="磁盘1"> 苹果</n-descriptions-item>
+  <n-spin :show="true" description="正在获取数据" class="space-y-4">
+    <n-descriptions label-placement="left" title="基础信息" :column="1">
+      <n-descriptions-item label="名称"> {{ server.name }}</n-descriptions-item>
+      <n-descriptions-item label="IP"> {{ server.ip }}</n-descriptions-item>
+      <n-descriptions-item label="系统"> {{ server.os }}</n-descriptions-item>
+      <n-descriptions-item label="状态"> {{ server.status }}</n-descriptions-item>
+      <n-descriptions-item label="位置"> {{ server.location }}</n-descriptions-item>
+      <n-descriptions-item label="CPU"> {{ server.cpu }}</n-descriptions-item>
+      <n-descriptions-item label="内存"> {{ server.memory }}</n-descriptions-item>
+      <n-descriptions-item label="SWAP"></n-descriptions-item>
+      <n-descriptions-item label="磁盘1"> {{ server.disk }}</n-descriptions-item>
       <n-descriptions-item label="磁盘2"> 苹果</n-descriptions-item>
       <n-descriptions-item label="磁盘3"> 苹果</n-descriptions-item>
     </n-descriptions>
@@ -18,13 +18,13 @@
         <div ref="networkRef" style="height: 300px; width: 100%"></div>
       </n-descriptions-item>
     </n-descriptions>
-    <n-descriptions title="网络状态">
-      <n-descriptions-item>
-        <!--      <div ref="networkRef" style="height: 500px; width: 100%"></div>-->
-      </n-descriptions-item>
-    </n-descriptions>
-  </div>
+  </n-spin>
 </template>
+<style>
+.n-descriptions-header {
+  margin-bottom: 0 !important;
+}
+</style>
 <script setup lang="ts">
 import type { ServerItemType } from '../../../types'
 import * as echarts from 'echarts/core'
@@ -89,15 +89,6 @@ onMounted(() => {
       trigger: 'axis',
       position: function (pt) {
         return [pt[0], '10%']
-      },
-    },
-    toolbox: {
-      feature: {
-        dataZoom: {
-          yAxisIndex: 'none',
-        },
-        restore: {},
-        saveAsImage: {},
       },
     },
     xAxis: {
