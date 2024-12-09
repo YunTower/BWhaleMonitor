@@ -62,19 +62,50 @@
         </n-form>
       </n-tab-pane>
       <n-tab-pane name="about" tab="关于系统">
+        <div class="space-y-4">
+          <n-descriptions label-placement="left" title="系统信息" :column="1">
+            <n-descriptions-item label="名称"> 蓝鲸服务器探针</n-descriptions-item>
+            <n-descriptions-item label="版本"> 苹果</n-descriptions-item>
+            <n-descriptions-item label="系统"> 苹果</n-descriptions-item>
+            <n-descriptions-item label="PHP"> 苹果</n-descriptions-item>
+            <n-descriptions-item label="HTTP"> 苹果</n-descriptions-item>
+            <n-descriptions-item label="WebSocket"> 苹果</n-descriptions-item>
+          </n-descriptions>
+          <n-descriptions label-placement="left" title="版本信息">
+            <n-descriptions-item label="名称"> 苹果</n-descriptions-item>
+          </n-descriptions>
+        </div>
         <div class="mb-2">
           <p>当前版本：{{ localVersion }}</p>
           <p>最新版本：{{ newVersion }}</p>
+          <n-space>
+            <n-button type="primary" size="small">检查更新</n-button>
+            <n-button size="small">立即更新</n-button>
+          </n-space>
           <n-collapse class="mt-2" default-expanded-names="1" accordion>
             <n-collapse-item title="更新详情" name="1">
-              <div>Python</div>
+              <ul class="overflow-y-scroll h-[300px]">
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+                <li>版本信息</li>
+              </ul>
             </n-collapse-item>
           </n-collapse>
         </div>
-        <n-space>
-          <n-button type="primary" size="small">检查更新</n-button>
-          <n-button size="small">立即更新</n-button>
-        </n-space>
       </n-tab-pane>
     </n-tabs>
   </n-card>
@@ -89,7 +120,15 @@
     @close="EditPasswordModalClose"
   />
 </template>
-
+<style>
+.n-descriptions
+  .n-descriptions-table-wrapper
+  .n-descriptions-table
+  .n-descriptions-table-row
+  .n-descriptions-table-content {
+  padding: 0;
+}
+</style>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
