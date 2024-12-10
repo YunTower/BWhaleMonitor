@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw, useRoute } from 'vue-router'
+import {createRouter, createWebHashHistory, createWebHistory, type RouteRecordRaw, useRoute} from 'vue-router'
 import { createDiscreteApi } from 'naive-ui'
 import { useRouteStore } from '@/stores/route'
 import requester from '@/utils/requester'
@@ -79,7 +79,7 @@ const routesOnlyAdmin: RouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes,
 })
 
