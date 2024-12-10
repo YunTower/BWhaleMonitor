@@ -1,5 +1,5 @@
 <template>
-  <n-spin :show="true" description="正在获取数据" class="space-y-4">
+  <n-spin :show="true" description="正在获取数据" class="space-y-6">
     <n-descriptions label-placement="left" title="基础信息" :column="1">
       <n-descriptions-item label="名称"> {{ server.name }}</n-descriptions-item>
       <n-descriptions-item label="IP"> {{ server.ip }}</n-descriptions-item>
