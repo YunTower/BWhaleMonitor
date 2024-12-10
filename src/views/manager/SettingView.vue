@@ -1,6 +1,6 @@
 <template>
   <n-card title="系统设置">
-    <n-tabs type="line" default-value="baseSetting">
+    <n-tabs type="line" default-value="baseSetting" @update:value="handleTabUpdate">
       <n-tab-pane name="baseSetting" tab="基础设置">
         <n-form ref="formRef" :model="formValue" :rules="formRules">
           <n-form-item path="interval" label="检测间隔">
@@ -64,20 +64,23 @@
       <n-tab-pane name="about" tab="关于系统">
         <div class="space-y-4">
           <n-descriptions label-placement="left" title="系统信息" :column="1">
-            <n-descriptions-item label="名称"> 蓝鲸服务器探针</n-descriptions-item>
-            <n-descriptions-item label="版本"> 苹果</n-descriptions-item>
-            <n-descriptions-item label="系统"> 苹果</n-descriptions-item>
-            <n-descriptions-item label="PHP"> 苹果</n-descriptions-item>
-            <n-descriptions-item label="HTTP"> 苹果</n-descriptions-item>
-            <n-descriptions-item label="WebSocket"> 苹果</n-descriptions-item>
+            <n-descriptions-item label="名称">
+              蓝鲸服务器探针 - {{ systemInfo.title }}
+            </n-descriptions-item>
+            <n-descriptions-item label="版本"> {{ systemInfo.os }}</n-descriptions-item>
+            <n-descriptions-item label="系统"> {{ systemInfo.os }}</n-descriptions-item>
+            <n-descriptions-item label="PHP"> {{ systemInfo.php }}</n-descriptions-item>
+            <n-descriptions-item label="HTTP API"> {{ systemInfo.http_api }}</n-descriptions-item>
+            <n-descriptions-item label="WebSocket API">
+              {{ systemInfo.websocket_api }}
+            </n-descriptions-item>
           </n-descriptions>
-          <n-descriptions label-placement="left" title="版本信息">
-            <n-descriptions-item label="名称"> 苹果</n-descriptions-item>
-          </n-descriptions>
-        </div>
-        <div class="mb-2">
-          <p>当前版本：{{ localVersion }}</p>
-          <p>最新版本：{{ newVersion }}</p>
+          <div class="mb-1">
+            <n-descriptions label-placement="left" title="版本信息" :column="1">
+              <n-descriptions-item label="当前版本"> {{ localVersion }}</n-descriptions-item>
+              <n-descriptions-item label="最新版本"> {{ newVersion }}</n-descriptions-item>
+            </n-descriptions>
+          </div>
           <n-space>
             <n-button type="primary" size="small">检查更新</n-button>
             <n-button size="small">立即更新</n-button>
@@ -133,7 +136,7 @@
 import { onMounted, ref } from 'vue'
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import requester from '@/utils/requester'
-import type { baseConfigType, systemConfigType } from '../../../types'
+import type { baseConfigType, BaseResponseType, systemConfigType, systemInfo } from '../../../types'
 import EditUserName from '@/components/user/EditUserName.vue'
 import { useCommonStore } from '@/stores/common'
 import EditPassword from '@/components/user/EditPassword.vue'
@@ -142,6 +145,7 @@ const { message } = createDiscreteApi(['message'])
 const commonStore = useCommonStore()
 const newVersion = ref('获取中')
 const localVersion = ref('1.0.0')
+const systemInfo = ref(<systemInfo>{})
 const formRef = ref<FormInst | null>(null)
 const formValue = ref({
   interval: 5,
@@ -242,6 +246,18 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
       }
     }
   })
+}
+
+const handleTabUpdate = async (value: string) => {
+  console.log(value)
+  if (value == 'about') {
+    const { code, msg, data }: BaseResponseType<systemInfo> = await requester.get('/index/info')
+    if (code == 0) {
+      systemInfo.value = data
+    } else {
+      message.error(`系统信息获取失败（${msg}）`)
+    }
+  }
 }
 
 onMounted(async () => {

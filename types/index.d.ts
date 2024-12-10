@@ -65,3 +65,12 @@ export interface Paginate<T> {
   total_page: number
   data: T
 }
+
+export interface systemInfo {
+  title: string
+  php: string
+  os: string
+  http_api: string
+  websocket_api: string
+  install_time: string
+}
