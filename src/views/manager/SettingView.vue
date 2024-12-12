@@ -65,9 +65,9 @@
         <div class="space-y-4">
           <n-descriptions label-placement="left" title="系统信息" :column="1">
             <n-descriptions-item label="名称">
-              蓝鲸服务器探针 - {{ systemInfo.title }}
+              蓝鲸服务器探针（{{ systemInfo.title }}）
             </n-descriptions-item>
-            <n-descriptions-item label="版本"> {{ systemInfo.os }}</n-descriptions-item>
+            <n-descriptions-item label="版本"> {{ systemInfo.version }}</n-descriptions-item>
             <n-descriptions-item label="系统"> {{ systemInfo.os }}</n-descriptions-item>
             <n-descriptions-item label="PHP"> {{ systemInfo.php }}</n-descriptions-item>
             <n-descriptions-item label="HTTP API"> {{ systemInfo.http_api }}</n-descriptions-item>
@@ -77,7 +77,7 @@
           </n-descriptions>
           <div class="mb-1">
             <n-descriptions label-placement="left" title="版本信息" :column="1">
-              <n-descriptions-item label="当前版本"> {{ localVersion }}</n-descriptions-item>
+              <n-descriptions-item label="当前版本"> {{ systemInfo.version }}</n-descriptions-item>
               <n-descriptions-item label="最新版本"> {{ newVersion }}</n-descriptions-item>
             </n-descriptions>
           </div>
@@ -144,10 +144,18 @@ import EditPassword from '@/components/user/EditPassword.vue'
 const { message } = createDiscreteApi(['message'])
 const commonStore = useCommonStore()
 const newVersion = ref('获取中')
-const localVersion = ref('1.0.0')
 const systemInfo = ref(<systemInfo>{})
 const formRef = ref<FormInst | null>(null)
-const formValue = ref({
+const formValue = ref(<
+  {
+    interval: number
+    visitor: boolean | string
+    visitor_password?: boolean | string | undefined
+    title: string
+    username?: string
+    password?: string
+  }
+>{
   interval: 5,
   visitor: false,
   visitor_password: '',
@@ -219,14 +227,14 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
       try {
         submitButtonLoading.value = true
         if ('password' in formValue.value) {
-          delete formValue.value.password
+          delete formValue.value?.password
         }
         if ('username' in formValue.value) {
-          delete formValue.value.username
+          delete formValue.value?.username
         }
 
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
-        if (formValue.value.visitor && !passwordRegex.test(formValue.value.visitor_password)) {
+        if (formValue.value.visitor && !passwordRegex.test(formValue.value?.visitor_password)) {
           message.error('访问密码至少包含字母和数字且不少于6位')
           return
         }
@@ -261,7 +269,7 @@ const handleTabUpdate = async (value: string) => {
 }
 
 onMounted(async () => {
-  const { code, msg, data }: baseConfigType<systemConfigType> = await requester.get(
+  const { code, msg, data }: BaseResponseType<systemConfigType> = await requester.get(
     '/config/get?columns=title,interval,visitor,visitor_password,username,password',
   )
   if (code == 0) {

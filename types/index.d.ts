@@ -49,7 +49,7 @@ export interface baseConfigType {
 export interface systemConfigType extends baseConfigType {
   username: string
   password: string
-  interval: number
+  interval: number | string
 }
 
 export interface missingExtension {
@@ -70,6 +70,7 @@ export interface systemInfo {
   title: string
   php: string
   os: string
+  version: string
   http_api: string
   websocket_api: string
   install_time: string
