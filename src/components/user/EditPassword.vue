@@ -30,10 +30,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { createDiscreteApi } from 'naive-ui'
+import { createDiscreteApi, type FormInst } from 'naive-ui'
 import requester from '@/utils/requester'
+import type { BaseResponseType } from '../../../types'
 
-const formRef = ref(null)
+const formRef = ref(<FormInst | null>null)
 const { message } = createDiscreteApi(['message'])
 const props = defineProps({
   showModal: {
@@ -53,7 +54,7 @@ const formRules = ref({
     {
       required: true,
       trigger: ['change', 'blur'],
-      validator: (rule, value) => {
+      validator: (rule: object, value: string) => {
         if (!value || value === '') {
           return new Error('旧密码是必填的')
         }
@@ -68,7 +69,7 @@ const formRules = ref({
     {
       required: true,
       trigger: ['change', 'blur'],
-      validator: (rule, value) => {
+      validator: (rule: object, value: string) => {
         if (!value || value === '') {
           return new Error('新密码是必填的')
         }
@@ -89,7 +90,10 @@ const handleSubmitButtonClick = async (e: MouseEvent) => {
       return
     } else {
       try {
-        const { code, msg, data } = await requester.patch('/config/edit/password', formValue.value)
+        const { code, msg }: BaseResponseType<null> = await requester.patch(
+          '/config/edit/password',
+          formValue.value,
+        )
         if (code === 0) {
           message.success('密码重置成功🎉')
           formValue.value = {

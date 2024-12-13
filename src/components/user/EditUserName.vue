@@ -29,10 +29,10 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { createDiscreteApi } from 'naive-ui'
+import { createDiscreteApi, type FormInst } from 'naive-ui'
 import requester from '@/utils/requester'
 
-const formRef = ref(null)
+const formRef = ref(<FormInst | null>null)
 const { message } = createDiscreteApi(['message'])
 const props = defineProps({
   showModal: {
