@@ -118,6 +118,7 @@ import requester from '@/utils/requester'
 import router from '@/router'
 import { useCommonStore } from '@/stores/common'
 import { storeToRefs } from 'pinia'
+import {sha256} from "js-sha256";
 
 const route = useRoute()
 const commonStore = useCommonStore()
@@ -247,7 +248,7 @@ const handleLogin = async (
       loading.destroy()
     } else {
       try {
-        const { code, msg, data } = await requester.post(loginUrl, (formValue as Ref).value)
+        const { code, msg, data } = await requester.post(loginUrl, formValue)
         if (code === 0) {
           message.success('登录成功', { duration: 5000 })
           commonStore.setUserLogin(data)
@@ -267,7 +268,10 @@ const handleLogin = async (
 
 const onAdminLogin = (e: MouseEvent) => {
   e.preventDefault()
-  handleLogin(adminFormRef, adminFormValue, '/auth/admin', adminLoginBtnLoading)
+  handleLogin(adminFormRef, {
+    ...adminFormValue.value,
+    ...{ password: sha256(adminFormValue.value.password) },
+  }, '/auth/admin', adminLoginBtnLoading)
 }
 
 const onVisitorLogin = (e: MouseEvent) => {

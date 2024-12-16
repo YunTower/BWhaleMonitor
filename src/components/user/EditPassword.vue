@@ -33,6 +33,7 @@ import { ref } from 'vue'
 import { createDiscreteApi, type FormInst } from 'naive-ui'
 import requester from '@/utils/requester'
 import type { BaseResponseType } from '../../../types'
+import { sha256 } from 'js-sha256'
 
 const formRef = ref(<FormInst | null>null)
 const { message } = createDiscreteApi(['message'])
@@ -92,7 +93,10 @@ const handleSubmitButtonClick = async (e: MouseEvent) => {
       try {
         const { code, msg }: BaseResponseType<null> = await requester.patch(
           '/config/edit/password',
-          formValue.value,
+          {
+            old_password: sha256(formValue.value.old_password),
+            new_password: sha256(formValue.value.new_password),
+          },
         )
         if (code === 0) {
           message.success('密码重置成功🎉')
