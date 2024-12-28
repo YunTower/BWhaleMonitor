@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+code {
+    background-color: #efefef;
+    padding: 2px;
+    border-radius: 3px;
+    font-family: "Consolas", serif;
+}
+
 .n-layout-sider .n-layout-sider--static-positioned, .n-layout-sider--show-content {
     background-color: rgb(249 250 251) !important;
 }
@@ -32,7 +39,7 @@
     margin: 0 !important;
 }
 
-.n-card,.n-modal {
+.n-card, .n-modal {
     margin-top: 30px;
     margin-bottom: 30px;
 }

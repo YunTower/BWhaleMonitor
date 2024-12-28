@@ -70,9 +70,11 @@
             <n-descriptions-item label="版本"> {{ systemInfo.version }}</n-descriptions-item>
             <n-descriptions-item label="系统"> {{ systemInfo.os }}</n-descriptions-item>
             <n-descriptions-item label="PHP"> {{ systemInfo.php }}</n-descriptions-item>
-            <n-descriptions-item label="HTTP API"> {{ systemInfo.http_api }}</n-descriptions-item>
+            <n-descriptions-item label="HTTP API">
+              <code> {{ systemInfo.http_api }}</code>
+            </n-descriptions-item>
             <n-descriptions-item label="WebSocket API">
-              {{ systemInfo.websocket_api }}
+              <code> {{ systemInfo.websocket_api }}</code>
             </n-descriptions-item>
           </n-descriptions>
           <div class="mb-1">
