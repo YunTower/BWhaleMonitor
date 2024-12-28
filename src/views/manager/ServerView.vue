@@ -38,7 +38,17 @@
   </n-modal>
   <n-card title="服务器管理">
     <n-space class="mb-2">
-      <n-button type="primary" size="small" @click="showAddModal">添加服务器</n-button>
+      <div class="w-full flex">
+        <n-button type="primary" size="small" @click="showAddModal">
+          <n-icon :component="AddOutline" />
+          添加服务器
+        </n-button>
+        <n-flex justify="end" class="w-[80vw]">
+          <n-button size="small" @click="requestData(1)">
+            <n-icon :component="RefreshOutline" />
+          </n-button>
+        </n-flex>
+      </div>
       <!--      <n-button size="small">删除选中</n-button>-->
     </n-space>
     <n-data-table
@@ -62,6 +72,7 @@ ul {
 </style>
 <script setup lang="ts">
 import { onMounted, ref, h, computed } from 'vue'
+import { AddOutline, RefreshOutline } from '@vicons/ionicons5'
 import requester from '@/utils/requester'
 import {
   createDiscreteApi,
@@ -93,6 +104,7 @@ const columns = [
   {
     title: '名称',
     key: 'name',
+    resizable: true,
   },
   {
     title: '状态',
@@ -107,14 +119,17 @@ const columns = [
   {
     title: '系统',
     key: 'os',
+    resizable: true,
   },
   {
     title: 'IP',
     key: 'ip',
+    resizable: true,
   },
   {
     title: '位置',
     key: 'location',
+    resizable: true,
   },
   {
     title: 'CPU',
@@ -361,6 +376,7 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
 
 const requestData = async (page: number = 1, limit: number = 10) => {
   try {
+    tableLoading.value = true
     const { code, msg, data }: BaseResponseType<Paginate<ServerInfoType[]>> = await requester.get(
       `/server/get?view=list&page=${page}&limit=${limit}`,
     )
