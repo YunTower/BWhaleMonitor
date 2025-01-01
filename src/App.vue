@@ -1,14 +1,16 @@
 <template>
-  <n-spin :show="loading">
-    <div v-if="noNeedMenu">
-      <router-view />
-    </div>
-    <div v-else>
-      <BaseLayout :name="computedLayout">
+  <n-message-provider>
+    <n-spin :show="loading">
+      <div v-if="noNeedMenu">
         <router-view />
-      </BaseLayout>
-    </div>
-  </n-spin>
+      </div>
+      <div v-else>
+        <BaseLayout :name="computedLayout">
+          <router-view />
+        </BaseLayout>
+      </div>
+    </n-spin>
+  </n-message-provider>
 </template>
 
 <script setup lang="ts">
@@ -41,7 +43,10 @@ onMounted(async () => {
   updateNoNeedMenu()
 })
 
-watch(() => route.name, () => {
-  updateNoNeedMenu()
-})
+watch(
+  () => route.name,
+  () => {
+    updateNoNeedMenu()
+  },
+)
 </script>

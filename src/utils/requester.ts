@@ -1,6 +1,6 @@
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import axios, { type AxiosError, type AxiosResponse } from 'axios'
-import { useNotification,createDiscreteApi } from 'naive-ui'
+import { createDiscreteApi, useMessage } from 'naive-ui'
 import type { BaseResponseType } from '@/../types'
 
 const { notification } = createDiscreteApi(['notification'])
@@ -31,12 +31,18 @@ requester.interceptors.response.use(
   },
   (error: AxiosError) => {
     if (error.response) {
-      if (error.response.status === 404) {
-        notification?.error?.({ content: '404 页面/接口不存在' })
-      }
+      // if (error.response.status === 500) {
+      //   notification?.error?.({ content: error.response?.data?.msg ?? '服务器错误，请稍后重试' })
+      // }
+
+      // if (error.response.status === 404) {
+      //   notification?.error?.({ content: error.response?.data?.msg ?? '404 页面/接口不存在' })
+      // }
 
       if (error.response.status === 429) {
-        notification?.error?.({ content: '请求过于频繁，请稍后再试！' })
+        notification?.error?.({
+          content: error.response?.data?.msg ?? '请求过于频繁，请稍后再试！',
+        })
       }
     } else {
       if (
