@@ -1,16 +1,18 @@
 <template>
-  <n-message-provider>
-    <n-spin :show="loading">
-      <div v-if="noNeedMenu">
-        <router-view />
-      </div>
-      <div v-else>
-        <BaseLayout :name="computedLayout">
+  <n-config-provider>
+    <n-message-provider>
+      <n-spin :show="loading">
+        <div v-if="noNeedMenu">
           <router-view />
-        </BaseLayout>
-      </div>
-    </n-spin>
-  </n-message-provider>
+        </div>
+        <div v-else>
+          <BaseLayout :name="computedLayout">
+            <router-view />
+          </BaseLayout>
+        </div>
+      </n-spin>
+    </n-message-provider>
+  </n-config-provider>
 </template>
 
 <script setup lang="ts">
