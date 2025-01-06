@@ -126,11 +126,11 @@
   />
 </template>
 <style>
-.n-descriptions
-  .n-descriptions-table-wrapper
-  .n-descriptions-table
-  .n-descriptions-table-row
-  .n-descriptions-table-content {
+.n-descriptions,
+.n-descriptions-table-wrapper,
+.n-descriptions-table,
+.n-descriptions-table-row,
+.n-descriptions-table-content {
   padding: 0;
 }
 </style>
@@ -138,7 +138,7 @@
 import { onMounted, ref } from 'vue'
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import requester from '@/utils/requester'
-import type { baseConfigType, BaseResponseType, systemConfigType, systemInfo } from '../../../types'
+import type { BaseResponseType, systemConfigType, systemInfo } from '../../../types'
 import EditUserName from '@/components/user/EditUserName.vue'
 import { useCommonStore } from '@/stores/common'
 import EditPassword from '@/components/user/EditPassword.vue'
@@ -236,7 +236,17 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
         }
 
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
-        if (formValue.value.visitor && !passwordRegex.test(formValue.value?.visitor_password)) {
+        console.log(formValue.value?.visitor_password)
+        console.log((
+          formValue.value.visitor &&
+          formValue.value?.visitor_password !== '' &&
+          !passwordRegex.test(formValue.value?.visitor_password)
+        ))
+        if (
+          formValue.value.visitor &&
+          formValue.value?.visitor_password !== '' &&
+          !passwordRegex.test(formValue.value?.visitor_password)
+        ) {
           message.error('访问密码至少包含字母和数字且不少于6位')
           return
         }
