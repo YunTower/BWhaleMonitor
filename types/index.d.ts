@@ -27,15 +27,31 @@ export interface ServerItemType {
   status: 1 | 0
 }
 
+export interface CpuDetails {
+  id: number
+  cores: number
+  mhz: number
+  name: string
+  physicalId: string
+  vendorId: string
+}
+
+export interface DiskDetails {
+  path: string
+  free: number
+  total: number
+  used: number
+}
+
 export interface ServerInfoType {
   id: number
   name: string
   os: string
   ip: string
   location: string
-  cpu: number
+  cpu: CpuDetails[]
   memory: number
-  disk: number
+  disk: DiskDetails[]
   uptime: string
   status: number
 }

@@ -85,16 +85,14 @@
   </n-modal>
   <n-card title="服务器管理">
     <n-space class="mb-2">
-      <div class="w-full flex">
+      <div class="w-full flex space-x-2">
         <n-button type="primary" size="small" @click="showAddModal">
           <n-icon :component="AddOutline" />
           添加服务器
         </n-button>
-        <n-flex justify="end" class="w-[80vw]">
-          <n-button size="small" @click="requestData(1)">
-            <n-icon :component="RefreshOutline" />
-          </n-button>
-        </n-flex>
+        <n-button size="small" @click="requestData(1)">
+          <n-icon :component="RefreshOutline" />
+        </n-button>
       </div>
       <!--      <n-button size="small">删除选中</n-button>-->
     </n-space>
@@ -118,15 +116,25 @@ ul {
   margin-left: 20px;
   color: rgb(107 114 128);
 }
+
+.n-data-table .n-data-table-tr:not(.n-data-table-tr--summary) > .n-data-table-td {
+  background-color: #fff;
+}
+
+.n-data-table-expand {
+  background-color: rgba(247, 247, 250, 1);
+}
+
+:deep(.n-card > .n-card-header) {
+  margin-bottom: -55px;
+}
 </style>
 <script setup lang="ts">
 import { onMounted, ref, h, computed } from 'vue'
 import { AddOutline, RefreshOutline } from '@vicons/ionicons5'
 import requester from '@/utils/requester'
 import {
-  createDiscreteApi,
   type FormItemRule,
-  type addFormRules,
   NButton,
   NSpace,
   NTag,
@@ -134,8 +142,9 @@ import {
   type FormInst,
   NPopconfirm,
 } from 'naive-ui'
-import type { Paginate, ServerInfoType } from '../../../types'
+import type { CpuDetails, DiskDetails, Paginate, ServerInfoType } from '../../../types'
 import RowDetails from '@/components/manager/RowDetails.vue'
+import webSocket from '@/utils/WebSocket'
 
 // const { message } = createDiscreteApi(['message'])
 const message = useMessage()
@@ -186,22 +195,40 @@ const columns = [
   {
     title: 'CPU',
     key: 'cpu',
+    resizable: true,
     render(rowData: ServerInfoType) {
-      return `${rowData.cpu} 核心`
+      if (rowData.cpu.length === 1) {
+        return `${rowData.cpu[0].cores} 核心`
+      } else {
+        let content = ''
+        rowData.cpu.forEach((item: CpuDetails, index) => {
+          content += `（${index}）${item.cores} 核心`
+        })
+        return content
+      }
     },
   },
   {
     title: '内存',
     key: 'memory',
     render(rowData: ServerInfoType) {
-      return `${rowData.memory} MB`
+      return `${parseInt(rowData.memory / (1024 * 1024))} MB`
     },
   },
   {
     title: '磁盘',
     key: 'disk',
     render(rowData: ServerInfoType) {
-      return `${rowData.disk} GB`
+      const disk = rowData.disk
+      if (rowData.disk.length === 1) {
+        return `（${disk[0].path}）${parseInt(disk[0].used / (1024 * 1024 * 1024))} GB/${parseInt(disk[0].total / (1024 * 1024 * 1024))} GB`
+      } else {
+        let content = ''
+        disk.forEach((item: DiskDetails) => {
+          content += `（${item.path}）${parseInt(item.used / (1024 * 1024 * 1024))} GB/${parseInt(item.total / (1024 * 1024 * 1024))} GB`
+        })
+        return content
+      }
     },
   },
   {
@@ -526,5 +553,13 @@ const requestData = async (page: number = 1, limit: number = 10) => {
 
 onMounted(() => {
   requestData()
+  const ws = new webSocket('ws://127.0.0.1:8097')
+  ws.connect()
+  ws.onOpen((event) => {
+    console.log(event)
+  })
+  ws.onMessage((event) => {
+    console.log(event)
+  })
 })
 </script>
