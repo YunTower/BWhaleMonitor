@@ -15,7 +15,7 @@
       </n-descriptions>
       <n-descriptions label-placement="top">
         <n-descriptions-item label="CPU" v-if="server.cpu.length === 1">
-          {{ server.cpu[0].cores }} 核心 {{ server.cpu[0].mhz }} mhz （{{ server.cpu[0].name }}）
+          {{ server.cpu[0].cores }} 核心 （{{ server.cpu[0].name }}）
         </n-descriptions-item>
         <n-descriptions-item v-else :label="'CPU ' + index" v-for="(item, index) in server.cpu">
           {{ item.cores }} 核心 {{ item.mhz }} mhz （{{ item.name }}）

@@ -168,43 +168,42 @@ const columns = [
     resizable: true,
   },
   {
+    title: 'IP',
+    key: 'ip',
+    render(rowData: ServerInfoType) {
+      return `${rowData.ip}（${rowData.location}）`
+    }
+  },
+  {
     title: '状态',
     key: 'status',
     sorter: 'default',
     render(rowData: ServerInfoType) {
       return rowData.status === 1
-        ? h(NTag, { type: 'success' }, () => '正常')
+        ? h(NTag, { type: 'success' }, () => '在线')
         : h(NTag, { type: 'error' }, () => '离线')
     },
   },
   {
     title: '系统',
     key: 'os',
-    resizable: true,
-  },
-  {
-    title: 'IP',
-    key: 'ip',
-    resizable: true,
-  },
-  {
-    title: '位置',
-    key: 'location',
-    resizable: true,
   },
   {
     title: 'CPU',
     key: 'cpu',
-    resizable: true,
     render(rowData: ServerInfoType) {
-      if (rowData.cpu.length === 1) {
-        return `${rowData.cpu[0].cores} 核心`
+      if (rowData.cpu) {
+        if (rowData.cpu.length === 1) {
+          return `${rowData.cpu[0].cores} 核心`
+        } else {
+          let content = ''
+          rowData.cpu.forEach((item: CpuDetails, index) => {
+            content += `（${index}）${item.cores} 核心`
+          })
+          return content
+        }
       } else {
-        let content = ''
-        rowData.cpu.forEach((item: CpuDetails, index) => {
-          content += `（${index}）${item.cores} 核心`
-        })
-        return content
+        return '待同步'
       }
     },
   },
@@ -212,7 +211,11 @@ const columns = [
     title: '内存',
     key: 'memory',
     render(rowData: ServerInfoType) {
-      return `${parseInt(rowData.memory / (1024 * 1024))} MB`
+      if (rowData.memory) {
+        return `${parseInt(rowData.memory / (1024 * 1024))} MB`
+      } else {
+        return '待同步'
+      }
     },
   },
   {
@@ -220,14 +223,18 @@ const columns = [
     key: 'disk',
     render(rowData: ServerInfoType) {
       const disk = rowData.disk
-      if (rowData.disk.length === 1) {
-        return `（${disk[0].path}）${parseInt(disk[0].used / (1024 * 1024 * 1024))} GB/${parseInt(disk[0].total / (1024 * 1024 * 1024))} GB`
+      if (rowData.disk) {
+        if (rowData.disk.length === 1) {
+          return `（${disk[0].path}）${parseInt(disk[0].used / (1024 * 1024 * 1024))} GB/${parseInt(disk[0].total / (1024 * 1024 * 1024))} GB`
+        } else {
+          let content = ''
+          disk.forEach((item: DiskDetails) => {
+            content += `（${item.path}）${parseInt(item.used / (1024 * 1024 * 1024))} GB/${parseInt(item.total / (1024 * 1024 * 1024))} GB`
+          })
+          return content
+        }
       } else {
-        let content = ''
-        disk.forEach((item: DiskDetails) => {
-          content += `（${item.path}）${parseInt(item.used / (1024 * 1024 * 1024))} GB/${parseInt(item.total / (1024 * 1024 * 1024))} GB`
-        })
-        return content
+        return '待同步'
       }
     },
   },
@@ -242,31 +249,6 @@ const columns = [
         {},
         {
           default: () => [
-            // h(
-            //   NButton,
-            //   {
-            //     strong: true,
-            //     tertiary: true,
-            //     size: 'small',
-            //     type: 'error',
-            //     onClick: async () => {
-            //       try {
-            //         const resp = await requester.delete('/server/delete/' + rowData.id)
-            //         if (resp && resp.code === 0) {
-            //           message.success(`服务器【${rowData.name}】删除成功`)
-            //         } else {
-            //
-            //           message.error(`删除失败（${resp.msg}）`)
-            //         }
-            //       } catch (e) {
-            //         console.log(e)
-            //         message.error('删除失败')
-            //       }
-            //       window.event?.stopPropagation()
-            //     },
-            //   },
-            //   { default: () => '删除' },
-            // ),
             h(
               NPopconfirm,
               {
