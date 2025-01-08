@@ -13,7 +13,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@vicons/ionicons5": "^0.12.0",
     "axios": "^1.7.7",
     "echarts": "^5.5.1",
     "js-sha256": "^0.11.0",
@@ -25,6 +24,7 @@
     "@rollup/rollup-win32-x64-msvc": "^4.27.2",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.17.6",
+    "@vicons/ionicons5": "^0.13.0",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vitejs/plugin-vue-jsx": "^4.0.1",
     "@vue/eslint-config-prettier": "^10.1.0",
