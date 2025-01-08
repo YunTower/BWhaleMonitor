@@ -1,39 +1,18 @@
-# frontend
+# BWhale Monitor - 蓝鲸服务器监控探针
 
-This template should help get you started developing with Vue 3 in Vite.
+## 特点
+- 轻量
+  - 功能虽然不强大，但已足够
+- 低占用
+  - 被控端探针使用Go语言开发，拥有更高的性能和更低的占用
 
-## Recommended IDE Setup
+## 功能
+- [+] 访客（密码）访问
+- [+] 服务器CPU\RAM\磁盘\网络监控
+- [-] 阈值告警
+- [-] 监控历史记录
+- [-] 系统日志
+- [-] 监控配置
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+## LICENSE
+BWhale Monitor is released under the MIT license.
