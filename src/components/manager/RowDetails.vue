@@ -14,28 +14,34 @@
         <n-descriptions-item label="位置"> {{ server.location }}</n-descriptions-item>
       </n-descriptions>
       <n-descriptions label-placement="top">
-        <n-descriptions-item label="CPU" v-if="server.cpu.length === 1">
+        <n-descriptions-item label="CPU" v-if="server.cpu && server.cpu.length === 1">
           {{ server.cpu[0].cores }} 核心 （{{ server.cpu[0].name }}）
         </n-descriptions-item>
-        <n-descriptions-item v-else :label="'CPU ' + index" v-for="(item, index) in server.cpu">
+        <n-descriptions-item
+          v-else-if="server.cpu && server.cpu.length > 1"
+          :label="'CPU ' + index"
+          v-for="(item, index) in server.cpu"
+        >
           {{ item.cores }} 核心 {{ item.mhz }} mhz （{{ item.name }}）
         </n-descriptions-item>
+        <n-descriptions-item label="CPU" v-else> 待同步 </n-descriptions-item>
+
         <n-descriptions-item label="内存">
-          {{ 1024 }} / {{ parseInt(server.memory / (1024 * 1024)) }} MB
+          {{ 1024 }} / {{ Math.floor(server.memory / (1024 * 1024)) }} MB
         </n-descriptions-item>
         <n-descriptions-item v-if="server.disk.length === 1" n-descriptions-item label="磁盘">
-          共计 {{ parseInt(server.disk[0].total / (1024 * 1024 * 1024)) }}GB 已用
-          {{ parseInt(server.disk[0].used / (1024 * 1024 * 1024)) }}GB 可用
-          {{ parseInt(server.disk[0].free / (1024 * 1024 * 1024)) }}GB
+          共计 {{ Math.floor(server.disk[0].total / (1024 * 1024 * 1024)) }}GB 已用
+          {{ Math.floor(server.disk[0].used / (1024 * 1024 * 1024)) }}GB 可用
+          {{ Math.floor(server.disk[0].free / (1024 * 1024 * 1024)) }}GB
         </n-descriptions-item>
         <n-descriptions-item
           v-else
           :label="'磁盘（' + item.path + '）'"
           v-for="item in server.disk"
         >
-          共计 {{ parseInt(item.total / (1024 * 1024 * 1024)) }}GB 已用
-          {{ parseInt(item.used / (1024 * 1024 * 1024)) }}GB 可用
-          {{ parseInt(item.free / (1024 * 1024 * 1024)) }}GB
+          共计 {{ Math.floor(item.total / (1024 * 1024 * 1024)) }}GB 已用
+          {{ Math.floor(item.used / (1024 * 1024 * 1024)) }}GB 可用
+          {{ Math.floor(item.free / (1024 * 1024 * 1024)) }}GB
         </n-descriptions-item>
       </n-descriptions>
     </n-card>
@@ -72,27 +78,28 @@
 }
 </style>
 <script setup lang="ts">
-import type { ServerItemType } from '../../../types'
+import type { ServerInfoType } from '../../../types'
 import * as echarts from 'echarts/core'
 import {
   TitleComponent,
-  TitleComponentOption,
+  type TitleComponentOption,
   ToolboxComponent,
-  ToolboxComponentOption,
+  type ToolboxComponentOption,
   TooltipComponent,
-  TooltipComponentOption,
+  type TooltipComponentOption,
   GridComponent,
-  GridComponentOption,
+  type GridComponentOption,
   DataZoomComponent,
-  DataZoomComponentOption,
+  type DataZoomComponentOption,
 } from 'echarts/components'
-import { LineChart, LineSeriesOption } from 'echarts/charts'
+import { LineChart, type LineSeriesOption } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import { onMounted, ref } from 'vue'
+import type {XAXisOption} from "echarts/types/dist/shared";
 
 const props = defineProps<{
-  server: ServerItemType
+  server: ServerInfoType
 }>()
 const networkRef = ref(null)
 
@@ -118,7 +125,7 @@ type EChartsOption = echarts.ComposeOption<
 
 onMounted(() => {
   const myChart = echarts.init(networkRef.value)!
-  let option: EChartsOptionl
+  let option: EChartsOption
 
   let base = +new Date(1988, 9, 3)
   let oneDay = 24 * 3600 * 1000
@@ -138,9 +145,9 @@ onMounted(() => {
       },
     },
     xAxis: {
-      type: 'time',
+      type: 'time' as XAXisOption['type'],
       boundaryGap: false,
-    },
+    } as XAXisOption,
     yAxis: {
       type: 'value',
       boundaryGap: [0, '100%'],
