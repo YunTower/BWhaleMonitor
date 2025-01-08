@@ -59,17 +59,11 @@
       <n-form-item path="name" label="服务器名称">
         <n-input v-model:value="editFormValue.name" placeholder="必填，不建议太长" />
       </n-form-item>
-      <n-form-item path="ip" label="服务器IPv4">
-        <n-input v-model:value="editFormValue.ip" placeholder="请填写正确的服务器IPv4" />
-      </n-form-item>
       <n-form-item path="os" label="服务器系统">
         <n-select v-model:value="editFormValue.os" :options="osSelectOptions" />
       </n-form-item>
       <n-form-item path="location" label="服务器位置">
         <n-input v-model:value="editFormValue.location" placeholder="留空则自动获取" />
-      </n-form-item>
-      <n-form-item path="script" label="被控安装脚本">
-        <n-input v-model:value="editFormValue.script" type="textarea" disabled />
       </n-form-item>
       <n-row :gutter="[0, 24]">
         <n-col :span="24">
@@ -130,7 +124,7 @@ ul {
 }
 </style>
 <script setup lang="ts">
-import { onMounted, ref, h, computed } from 'vue'
+import { onMounted, ref, h, computed, watch } from 'vue'
 import { AddOutline, RefreshOutline } from '@vicons/ionicons5'
 import requester from '@/utils/requester'
 import {
@@ -142,12 +136,29 @@ import {
   type FormInst,
   NPopconfirm,
 } from 'naive-ui'
-import type { CpuDetails, DiskDetails, Paginate, ServerInfoType } from '../../../types'
+import type {
+  BaseResponseType,
+  CpuDetails,
+  DiskDetails,
+  Paginate,
+  ServerInfoType,
+  SocketMessage,
+} from '../../../types'
 import RowDetails from '@/components/manager/RowDetails.vue'
 import webSocket from '@/utils/WebSocket'
+import { useSocketStore } from '@/stores/socket'
+import { storeToRefs } from 'pinia'
+import { useCommonStore } from '@/stores/common'
 
 // const { message } = createDiscreteApi(['message'])
 const message = useMessage()
+const socketStore = useSocketStore()
+const commonStore = useCommonStore()
+const { userInfo } = storeToRefs(commonStore)
+const { connect } = storeToRefs(socketStore)
+// 正在监听的服务器ID
+const listeningServer = ref<number[]>([])
+const isSocketAuth = ref(false)
 const columns = [
   {
     type: 'expand',
@@ -172,7 +183,7 @@ const columns = [
     key: 'ip',
     render(rowData: ServerInfoType) {
       return `${rowData.ip}（${rowData.location}）`
-    }
+    },
   },
   {
     title: '状态',
@@ -212,7 +223,7 @@ const columns = [
     key: 'memory',
     render(rowData: ServerInfoType) {
       if (rowData.memory) {
-        return `${parseInt(rowData.memory / (1024 * 1024))} MB`
+        return `${Math.floor(rowData.memory / (1024 * 1024))} MB`
       } else {
         return '待同步'
       }
@@ -225,11 +236,11 @@ const columns = [
       const disk = rowData.disk
       if (rowData.disk) {
         if (rowData.disk.length === 1) {
-          return `（${disk[0].path}）${parseInt(disk[0].used / (1024 * 1024 * 1024))} GB/${parseInt(disk[0].total / (1024 * 1024 * 1024))} GB`
+          return `（${disk[0].path}）${Math.floor(disk[0].used / (1024 * 1024 * 1024))} GB/${Math.floor(disk[0].total / (1024 * 1024 * 1024))} GB`
         } else {
           let content = ''
           disk.forEach((item: DiskDetails) => {
-            content += `（${item.path}）${parseInt(item.used / (1024 * 1024 * 1024))} GB/${parseInt(item.total / (1024 * 1024 * 1024))} GB`
+            content += `（${item.path}）${Math.floor(item.used / (1024 * 1024 * 1024))} GB/${Math.floor(item.total / (1024 * 1024 * 1024))} GB`
           })
           return content
         }
@@ -299,11 +310,11 @@ const addButtonLoading = ref(false)
 const editButtonLoading = ref(false)
 const addModalVisible = ref(false)
 const editModalVisible = ref(false)
-const expandedKey = ref([])
+const expandedKey = ref(<number[]>[])
 const onRowClick = (row: ServerInfoType) => {
   return {
     style: 'cursor: pointer;',
-    onClick: (event) => {
+    onClick: () => {
       if (expandedKey.value.includes(row.id)) {
         expandedKey.value = []
       } else {
@@ -402,7 +413,7 @@ const addFormValue = ref({
   script?: string
 })
 
-const addFormRules: addFormRules = {
+const addFormRules = {
   name: [
     {
       required: true,
@@ -441,6 +452,38 @@ const addFormRules: addFormRules = {
     },
   ],
   script: [
+    {
+      required: false,
+    },
+  ],
+}
+
+const editFormValue = ref({
+  name: '',
+  location: '',
+  os: 'auto',
+} as {
+  name: string
+  os: string
+  location: string
+})
+
+const editFormRules = {
+  name: [
+    {
+      required: true,
+      message: '请输入服务器名称',
+      trigger: ['input', 'blur'],
+    },
+  ],
+  os: [
+    {
+      required: true,
+      message: '请选择服务器系统',
+      trigger: ['change', 'blur'],
+    },
+  ],
+  location: [
     {
       required: false,
     },
@@ -535,13 +578,44 @@ const requestData = async (page: number = 1, limit: number = 10) => {
 
 onMounted(() => {
   requestData()
-  const ws = new webSocket('ws://127.0.0.1:8097')
-  ws.connect()
-  ws.onOpen((event) => {
-    console.log(event)
+  if (connect.value) {
+    connect.value.destroy()
+  }
+  connect.value = new webSocket('ws://127.0.0.1:8097') as webSocket
+  connect.value?.connect()
+  connect.value?.onMessage((event) => {
+    const msg = JSON.parse(event) as SocketMessage
+
+    switch (msg.type) {
+      case 'auth':
+        if (msg?.status) {
+          if (msg.status === 'timeout') {
+            message.error('WebSocket 认证超时，已断开连接')
+            connect.value?.destroy()
+          } else if (msg.status === 'error') {
+            message.error(`WebSocket 认证失败（${msg?.message}）`)
+          } else if (msg.status === 'success') {
+            message.success('WebSocket 连接成功')
+            isSocketAuth.value = true
+          }
+        } else {
+          connect.value?.send({
+            type: 'auth',
+            data: {
+              type: 'user',
+              username: userInfo.value?.username,
+              role: userInfo.value?.role,
+            },
+          })
+        }
+        break
+      case 'server':
+        break
+    }
   })
-  ws.onMessage((event) => {
-    console.log(event)
+  connect.value?.onClose(() => {
+    isSocketAuth.value = false
+    message.warning('WebSocket 连接已断开')
   })
 })
 </script>

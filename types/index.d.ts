@@ -91,3 +91,10 @@ export interface systemInfo {
   websocket_api: string
   install_time: string
 }
+
+export interface SocketMessage {
+  type: string
+  status?: string
+  message?: string
+  data: any
+}

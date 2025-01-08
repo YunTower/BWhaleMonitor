@@ -16,20 +16,20 @@ class webSocket {
   private isConnect: boolean = false
   private isReconnecting: boolean = false
   private isDestroyed: boolean = false
-  private reconnectTimer: NodeJS.Timeout | null = null
-  private heartbeatTimer: NodeJS.Timeout | null = null
+  private reconnectTimer: number | null = null
+  private heartbeatTimer: number | null = null
   private readonly heartbeatInterval: number
-  private readonly heartbeatData: string
+  readonly heartbeatData: any
   private onMessageCallback: ((message: string) => void) | null = null
   private onOpenCallback: (() => void) | null = null
   private onCloseCallback: (() => void) | null = null
 
   constructor(url: string, options: SocketOptions = {}) {
     this.url = url
-    this.maxReconnectTimes = options.maxReconnectTimes || 5
-    this.reconnectInterval = options.reconnectInterval || 3000
-    this.heartbeatInterval = options.heartbeatInterval || 30000
-    this.heartbeatData = options.heartbeatData || 'hello'
+    this.maxReconnectTimes = options.maxReconnectTimes || 3
+    this.reconnectInterval = options.reconnectInterval || 30000
+    this.heartbeatInterval = options.heartbeatInterval || 20000
+    this.heartbeatData = options.heartbeatData || { "type": "hello" }
   }
 
   /**
@@ -95,9 +95,9 @@ class webSocket {
    * 发送消息
    * @param data
    */
-  public send(data: string): void {
+  public send(data: any): void {
     if (this.isOpen && this.socket) {
-      this.socket.send(data)
+      this.socket.send(JSON.stringify(data))
     } else {
       console.error('WebSocket 未打开，无法发送消息。')
     }
