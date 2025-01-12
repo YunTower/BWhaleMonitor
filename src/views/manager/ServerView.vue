@@ -317,8 +317,22 @@ const onRowClick = (row: ServerInfoType) => {
     onClick: () => {
       if (expandedKey.value.includes(row.id)) {
         expandedKey.value = []
+        if (listeningServer.value.includes(row.id)) {
+          listeningServer.value = listeningServer.value.filter((item) => item !== row.id)
+        }
       } else {
         expandedKey.value = [row.id]
+        listeningServer.value.push(row.id)
+        console.log(listeningServer.value)
+      }
+
+      if (isSocketAuth.value) {
+        connect.value?.send({
+          type: 'listen',
+          data: {
+            listen_id: listeningServer.value,
+          },
+        })
       }
     },
   }
@@ -581,6 +595,7 @@ onMounted(() => {
   if (connect.value) {
     connect.value.destroy()
   }
+
   connect.value = new webSocket('ws://127.0.0.1:8097') as webSocket
   connect.value?.connect()
   connect.value?.onMessage((event) => {
