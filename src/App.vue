@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import BaseLayout from '@/components/BaseLayout.vue'
+import BaseLayout from '@/layouts/BaseLayout.vue'
 import { useCommonStore } from '@/stores/common'
 import { storeToRefs } from 'pinia'
 

@@ -1,0 +1,38 @@
+[
+  {
+    "label": "自动获取",
+    "value": "auto"
+  },
+  {
+    "label": "Windows Server",
+    "value": "Windows Server"
+  },
+  {
+    "label": "CentOS",
+    "value": "CentOS"
+  },
+  {
+    "label": "Ubuntu",
+    "value": "Ubuntu"
+  },
+  {
+    "label": "Debian",
+    "value": "Debian"
+  },
+  {
+    "label": "Alibaba Cloud Linux",
+    "value": "Alibaba Cloud Linux"
+  },
+  {
+    "label": "TencentOS",
+    "value": "TencentOS"
+  },
+  {
+    "label": "Red Hat",
+    "value": "Red Hat"
+  },
+  {
+    "label": "Other",
+    "value": "Other"
+  }
+]

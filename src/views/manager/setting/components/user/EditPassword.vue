@@ -32,7 +32,7 @@
 import { ref } from 'vue'
 import { createDiscreteApi, type FormInst } from 'naive-ui'
 import requester from '@/utils/requester'
-import type { BaseResponseType } from '../../../types'
+import type { BaseResponseType } from '../../../../../types'
 import { sha256 } from 'js-sha256'
 
 const formRef = ref(<FormInst | null>null)

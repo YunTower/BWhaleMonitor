@@ -138,10 +138,13 @@
 import { onMounted, ref } from 'vue'
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import requester from '@/utils/requester'
-import type { BaseResponseType, systemConfigType, systemInfo } from '../../../types'
-import EditUserName from '@/components/user/EditUserName.vue'
 import { useCommonStore } from '@/stores/common'
-import EditPassword from '@/components/user/EditPassword.vue'
+import type { BaseResponseType } from '@/types/global'
+import type { systemInfo } from '@/types/manager'
+import type { systemConfigType } from '@/types/config'
+import EditUserName from '@/views/manager/setting/components/user/EditUserName.vue'
+import EditPassword from '@/views/manager/setting/components/user/EditPassword.vue'
+import { getConfig, getSysInfo } from '@/api/config'
 
 const { message } = createDiscreteApi(['message'])
 const commonStore = useCommonStore()
@@ -237,11 +240,11 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
 
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/
         console.log(formValue.value?.visitor_password)
-        console.log((
+        console.log(
           formValue.value.visitor &&
-          formValue.value?.visitor_password !== '' &&
-          !passwordRegex.test(formValue.value?.visitor_password)
-        ))
+            formValue.value?.visitor_password !== '' &&
+            !passwordRegex.test(formValue.value?.visitor_password),
+        )
         if (
           formValue.value.visitor &&
           formValue.value?.visitor_password !== '' &&
@@ -271,7 +274,7 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
 const handleTabUpdate = async (value: string) => {
   console.log(value)
   if (value == 'about') {
-    const { code, msg, data }: BaseResponseType<systemInfo> = await requester.get('/index/info')
+    const { code, msg, data } = await getSysInfo()
     if (code == 0) {
       systemInfo.value = data
     } else {
@@ -281,9 +284,14 @@ const handleTabUpdate = async (value: string) => {
 }
 
 onMounted(async () => {
-  const { code, msg, data }: BaseResponseType<systemConfigType> = await requester.get(
-    '/config/get?columns=title,interval,visitor,visitor_password,username,password',
-  )
+  const { code, msg, data } = await getConfig([
+    'title',
+    'interval',
+    'visitor',
+    'visitor_password',
+    'username',
+    'password',
+  ])
   if (code == 0) {
     formValue.value = {
       ...data,

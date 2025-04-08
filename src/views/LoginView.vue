@@ -35,9 +35,9 @@
                   height="34"
                   width="130"
                   :src="captchaPic"
-                  alt=""
+                  alt="captcha"
+                  @click="requestCaptcha"
                   @error="onCaptchaLoadError"
-                  @click="getCaptcha"
                   lazy
                   preview-disabled
                 />
@@ -80,9 +80,9 @@
                   height="34"
                   width="130"
                   :src="captchaPic"
-                  alt=""
+                  alt="captcha"
+                  @click="requestCaptcha"
                   @error="onCaptchaLoadError"
-                  @click="getCaptcha"
                   lazy
                   preview-disabled
                 />
@@ -112,13 +112,13 @@
 </style>
 <script setup lang="ts">
 import { onMounted, type Ref, ref } from 'vue'
-import { createDiscreteApi, type FormRules, type FormValidationError } from 'naive-ui'
 import { useRoute } from 'vue-router'
-import requester from '@/utils/requester'
-import router from '@/router'
-import { useCommonStore } from '@/stores/common'
 import { storeToRefs } from 'pinia'
 import {sha256} from "js-sha256";
+import router from '@/router'
+import { useCommonStore } from '@/stores/common'
+import { authAdminLogin, authVisitorLogin, getCaptcha } from '@/api/auth';
+import { createDiscreteApi, type FormRules, type FormValidationError } from 'naive-ui'
 
 const route = useRoute()
 const commonStore = useCommonStore()
@@ -140,8 +140,8 @@ const visitorFormValue = ref({
 })
 
 const captchaPic = ref('')
-const getCaptcha = () => {
-  captchaPic.value = '/api/auth/captcha?t=' + new Date().getTime()
+const requestCaptcha = () => {
+  captchaPic.value = getCaptcha()
 }
 
 const adminFormRules: FormRules = {
@@ -229,13 +229,13 @@ const visitorFormRules: FormRules = {
 }
 
 const onCaptchaLoadError = () => {
-  console.log('captcha load error')
+  message.error('图形验证码加载失败，请刷新重试')
 }
 
 const handleLogin = async (
   formRef: Ref,
   formValue: object,
-  loginUrl: string,
+  loginFunc: Function,
   btnLoading: Ref<boolean>,
 ) => {
   const loading = message.loading('正在登录...')
@@ -248,7 +248,7 @@ const handleLogin = async (
       loading.destroy()
     } else {
       try {
-        const { code, msg, data } = await requester.post(loginUrl, formValue)
+        const { code, msg, data } = await loginFunc(formValue)
         if (code === 0) {
           message.success('登录成功', { duration: 5000 })
           commonStore.setUserLogin(data)
@@ -271,7 +271,7 @@ const onAdminLogin = (e: MouseEvent) => {
   handleLogin(adminFormRef, {
     ...adminFormValue.value,
     ...{ password: sha256(adminFormValue.value.password) },
-  }, '/auth/admin', adminLoginBtnLoading)
+  }, authAdminLogin, adminLoginBtnLoading)
 }
 
 const onVisitorLogin = (e: MouseEvent) => {
@@ -282,11 +282,11 @@ const onVisitorLogin = (e: MouseEvent) => {
       visitorFormValue.value.password = null
     }
   }
-  handleLogin(visitorFormRef, visitorFormValue, '/auth/visitor', visitorLoginBtnLoading)
+  handleLogin(visitorFormRef, visitorFormValue, authVisitorLogin, visitorLoginBtnLoading)
 }
 
 onMounted(() => {
-  getCaptcha()
+  requestCaptcha()
   if (route.query.type == 'visitor') {
     defaultTab.value = 'visitor'
   }

@@ -1,13 +1,11 @@
-import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import axios, { type AxiosError, type AxiosResponse } from 'axios'
-import { createDiscreteApi, useMessage } from 'naive-ui'
-import type { BaseResponseType } from '@/../types'
+import { createDiscreteApi } from 'naive-ui'
+import type { BaseResponseType } from '@/types/global'
+import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 
 const { notification } = createDiscreteApi(['notification'])
 const requester: AxiosInstance = axios.create({
-  // 设置基础路径
   baseURL: '/api',
-  // 请求超时时间
   timeout: 5000,
 })
 
@@ -21,6 +19,7 @@ requester.interceptors.request.use(
 )
 
 requester.interceptors.response.use(
+  // @ts-ignore
   async (response: AxiosResponse) => {
     const baseResponse: BaseResponseType<object> = {
       code: response.data.code,
@@ -41,7 +40,7 @@ requester.interceptors.response.use(
 
       if (error.response.status === 429) {
         notification?.error?.({
-          content: error.response?.data?.msg ?? '请求过于频繁，请稍后再试！',
+          content: (error.response?.data as { msg: string })?.msg ?? '请求过于频繁，请稍后再试！',
         })
       }
     } else {
@@ -66,12 +65,13 @@ requester.interceptors.response.use(
   },
 )
 
+// @ts-ignore
 interface ExtendedAxiosInstance extends AxiosInstance {
-  get<T>(url: string, config?: object): Promise<BaseResponseType<T>>
+  get<T>(url: string, config?: AxiosRequestConfig): Promise<BaseResponseType<T>>
 
-  post<T>(url: string, data?: object, config?: object): Promise<BaseResponseType<T>>
+  post<T>(url: string, data?: object, config?: AxiosRequestConfig): Promise<BaseResponseType<T>>
 
-  put<T>(url: string, data?: object, config?: object): Promise<BaseResponseType<T>>
+  put<T>(url: string, data?: object, config?: AxiosRequestConfig): Promise<BaseResponseType<T>>
 
   delete<T>(url: string, config?: object): Promise<BaseResponseType<T>>
 }

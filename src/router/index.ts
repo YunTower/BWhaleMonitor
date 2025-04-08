@@ -1,11 +1,13 @@
-import {createRouter, createWebHashHistory, createWebHistory, type RouteRecordRaw, useRoute} from 'vue-router'
+import { ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { createDiscreteApi } from 'naive-ui'
+import { useCommonStore } from '@/stores/common'
 import { useRouteStore } from '@/stores/route'
 import requester from '@/utils/requester'
-import { useCommonStore } from '@/stores/common'
-import { storeToRefs } from 'pinia'
-import type { baseConfigType } from '../../types'
-import { ref, watch } from 'vue'
+import type { baseConfigType } from '@/types/config'
+import { createRouter, createWebHashHistory, type RouteRecordRaw, useRoute } from 'vue-router'
+import { getConfig } from '@/api/config'
+import { authCheck } from '@/api/auth'
 
 const { message } = createDiscreteApi(['message'])
 const routes: RouteRecordRaw[] = [
@@ -61,15 +63,23 @@ const routesOnlyAdmin: RouteRecordRaw[] = [
         path: 'server',
         name: 'manager-server',
         alias: ['/manager'],
-        component: () => import('../views/manager/ServerView.vue'),
+        component: () => import('../views/manager/server/ServerView.vue'),
         meta: {
           title: '服务器管理',
         },
       },
       {
+        path: 'server/details/:id',
+        name: 'manager-server-details',
+        component: () => import('../views/manager/details/DetailsView.vue'),
+        meta: {
+          title: '详情',
+        },
+      },
+      {
         path: 'setting',
         name: 'manager-setting',
-        component: () => import('../views/manager/SettingView.vue'),
+        component: () => import('../views/manager/setting/SettingView.vue'),
         meta: {
           title: '系统设置',
         },
@@ -109,7 +119,7 @@ router.beforeEach(async (to, from, next) => {
   /**
    * 安装检查&配置获取
    */
-  const { code, data } = await requester.get('/config/get?columns=title,visitor,visitor_password')
+  const { code, data } = await getConfig(['title', 'visitor', 'visitor_password'])
   if (code === 1501) {
     if (to.path === '/install') {
       return next()
@@ -131,7 +141,7 @@ router.beforeEach(async (to, from, next) => {
    * 权限检查
    */
   if (!isUserLogin.value && to.name !== 'login') {
-    const { code, data, msg } = await requester.get('/auth/check')
+    const { code, data, msg } = await authCheck()
     if (code == 0) {
       commonStore.setUserLogin(data)
       return next()

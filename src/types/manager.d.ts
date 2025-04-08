@@ -1,15 +1,3 @@
-export interface BaseResponseType<T> {
-  code: number
-  data: T
-  msg: string
-  error?: any
-}
-
-export interface userType {
-  username: string
-  role: 'admin' | 'visitor'
-}
-
 export interface ServerItemType {
   id: number
   name: string
@@ -56,32 +44,6 @@ export interface ServerInfoType {
   status: number
 }
 
-export interface baseConfigType {
-  title: string
-  visitor: boolean | string
-  visitor_password: boolean | string
-}
-
-export interface systemConfigType extends baseConfigType {
-  username: string
-  password: string
-  interval: number | string
-}
-
-export interface missingExtension {
-  name: string
-  status: boolean
-  type: string
-}
-
-export interface Paginate<T> {
-  current_page: number
-  limit: number
-  total: number
-  total_page: number
-  data: T
-}
-
 export interface systemInfo {
   title: string
   php: string
@@ -92,9 +54,10 @@ export interface systemInfo {
   install_time: string
 }
 
-export interface SocketMessage {
-  type: string
-  status?: string
-  message?: string
-  data: any
+export interface AddForm {
+  name: string
+  ip: string
+  os: string
+  location: string
+  script?: string
 }

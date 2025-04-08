@@ -12,6 +12,6 @@
   </n-layout>
 </template>
 <script setup lang="ts">
-import Menu from '@/components/Menu.vue'
-import Footer from '@/components/Footer.vue'
+import Menu from '@/components/layout/Menu.vue'
+import Footer from '@/components/layout/Footer.vue'
 </script>

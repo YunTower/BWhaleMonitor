@@ -93,13 +93,13 @@
 }
 </style>
 <script setup lang="ts">
-import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import { onMounted, ref } from 'vue'
-import requester from '@/utils/requester'
+import { sha256 } from 'js-sha256'
 import router from '@/router'
 import { useCommonStore } from '@/stores/common'
-import { sha256 } from 'js-sha256'
-import type { BaseResponseType, missingExtension } from '../../types'
+import { installPanel } from '@/api/config'
+import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
+import type { missingExtension } from '@/types/global'
 
 const pageLoading = ref(true)
 const { message } = createDiscreteApi(['message'])
@@ -163,8 +163,7 @@ const formRules: FormRules = {
 }
 
 const checkEnv = async () => {
-  const { code, data }: BaseResponseType<missingExtension[]> =
-    await requester.get('/install/env/check')
+  const { code, data } = await checkEnv()
   if (code == 0) {
     message.success(`环境检查通过`)
     if (envModalVisible.value) {
@@ -190,7 +189,7 @@ const handleSubmitButtonClick = (e: MouseEvent) => {
       loading.destroy()
     } else {
       try {
-        const { code, msg } = await requester.post('/install/install', {
+        const { code, msg } = await installPanel({
           ...formValue.value,
           ...{ password: sha256(formValue.value.password) },
         })

@@ -71,6 +71,7 @@ import { storeToRefs } from 'pinia'
 import { useRouteStore } from '@/stores/route'
 import { useCommonStore } from '@/stores/common'
 import requester from '@/utils/requester'
+import { authLogout } from '@/api/auth'
 
 const routeStore = useRouteStore()
 const commonStore = useCommonStore()
@@ -92,7 +93,7 @@ const dropdownOptions = [
 
 const handleSelect = async (key: string | number) => {
   if (key == 'logout') {
-    const { code, msg } = await requester.post('/auth/logout')
+    const { code, msg } = await authLogout()
     if (code == 0) {
       message.success('退出成功')
       commonStore.setUserLogout()
@@ -129,13 +130,13 @@ const menuOptions = computed(() => {
       key: 'manager',
       show: isAdminRole.value,
     },
-  ].filter(option => !option.show || option.show)
+  ].filter((option) => !option.show || option.show)
 })
 
 watch(
   userInfo,
   (newValue) => {
-    isAdminRole.value = newValue?.role == 'admin';
+    isAdminRole.value = newValue?.role == 'admin'
   },
   { deep: true, immediate: true },
 )

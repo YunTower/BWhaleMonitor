@@ -55,7 +55,8 @@
 import { onMounted, ref } from 'vue'
 import { createDiscreteApi } from 'naive-ui'
 import requester from '@/utils/requester'
-import type { BaseResponseType, ServerItemType } from '../../types'
+import type { BaseResponseType } from '@/types/global'
+import type { ServerItemType } from '@/types/manager'
 
 const loading = ref(true)
 const serverList = ref([] as ServerItemType[])

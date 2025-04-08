@@ -78,7 +78,7 @@
 }
 </style>
 <script setup lang="ts">
-import type { ServerInfoType } from '../../../types'
+import type { ServerInfoType } from '@/types/manager'
 import * as echarts from 'echarts/core'
 import {
   TitleComponent,

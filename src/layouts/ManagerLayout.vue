@@ -50,6 +50,6 @@
 }
 </style>
 <script setup lang="ts">
-import Menu from '@/components/Menu.vue'
-import Side from '@/components/Sider.vue'
+import Menu from '@/components/layout/Menu.vue'
+import Side from '@/components/layout/Sider.vue'
 </script>
