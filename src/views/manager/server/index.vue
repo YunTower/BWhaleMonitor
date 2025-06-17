@@ -57,7 +57,7 @@ import type { CpuDetails, DiskDetails, ServerInfoType } from '@/types/manager'
 
 import { useCommonStore } from '@/stores/common'
 import { storeToRefs } from 'pinia'
-import { getSeverList } from '@/api/manager'
+import { getSeverList } from '@/apis/manager'
 import { useRouter } from 'vue-router'
 import AddModal from '@/views/manager/server/components/AddModal.vue'
 import EditModal from '@/views/manager/server/components/EditModal.vue'

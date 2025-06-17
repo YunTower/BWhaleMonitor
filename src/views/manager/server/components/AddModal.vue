@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { NButton, NSpace, useMessage } from 'naive-ui'
 import type { SelectOption, FormInst, FormItemRule } from 'naive-ui'
-import { addSever } from '@/api/manager'
+import { addSever } from '@/apis/manager'
 import os from '@/data/os.json'
 import type { AddForm } from '@/types/manager'
 

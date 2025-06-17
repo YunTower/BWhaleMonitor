@@ -1,6 +1,7 @@
-import requester from '@/utils/requester'
+import { request } from '@/utils/request'
 import type { InstallData, systemConfigType } from '@/types/config'
 import type { missingExtension } from '@/types/global'
+import type { systemInfo } from '@/types/manager'
 
 const API = {
   getConfig: '/config/get',
@@ -11,23 +12,26 @@ const API = {
 }
 
 export const getConfig = (columns: string[]) => {
-  return requester.get<systemConfigType>(API.getConfig, {
-    params: { columns: columns.join(',') },
+  return request.get<systemConfigType>({
+    url: API.getConfig,
+    params: {
+      columns: columns.join(','),
+    },
   })
 }
 
 export const updateConfig = (data: systemConfigType) => {
-  return requester.post<systemConfigType>(API.updateConfig, data)
+  return request.post<systemConfigType>({ url: API.updateConfig, data })
 }
 
 export const checkEnv = () => {
-  return requester.get<missingExtension[]>(API.checkSysEnv)
+  return request.get<missingExtension[]>({ url: API.checkSysEnv })
 }
 
 export const getSysInfo = () => {
-  return requester.get<systemInfo>(API.getSysInfo)
+  return request.get<systemInfo>({ url: API.getSysInfo })
 }
 
 export const installPanel = (data: InstallData) => {
-  return requester.post<string>(API.install, data)
+  return request.post<string>({ url: API.install, data })
 }

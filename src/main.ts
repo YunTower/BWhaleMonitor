@@ -5,6 +5,7 @@ import { createPinia, storeToRefs } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import naive from 'naive-ui'
+import './permission'
 
 const app = createApp(App)
 

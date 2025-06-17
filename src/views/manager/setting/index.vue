@@ -144,7 +144,7 @@ import type { systemInfo } from '@/types/manager'
 import type { systemConfigType } from '@/types/config'
 import EditUserName from '@/views/manager/setting/components/user/EditUserName.vue'
 import EditPassword from '@/views/manager/setting/components/user/EditPassword.vue'
-import { getConfig, getSysInfo } from '@/api/config'
+import { getConfig, getSysInfo } from '@/apis/config'
 
 const { message } = createDiscreteApi(['message'])
 const commonStore = useCommonStore()

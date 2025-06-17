@@ -1,3 +1,79 @@
+<script setup lang="ts">
+import { h, computed, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { useThemeVars, createDiscreteApi } from 'naive-ui'
+import { useRouteStore, useCommonStore } from '@/stores'
+import { authLogout } from '@/apis/auth'
+
+const routeStore = useRouteStore()
+const commonStore = useCommonStore()
+const { menuClicked } = storeToRefs(routeStore)
+const { isUserLogin, userInfo } = storeToRefs(commonStore)
+const route = useRoute()
+const router = useRouter()
+const themeVars = useThemeVars()
+const name = route.name
+const { message } = createDiscreteApi(['message'])
+const isAdminRole = ref(false)
+
+const dropdownOptions = [
+  {
+    label: '退出登录',
+    key: 'logout',
+  },
+]
+
+const handleSelect = async (key: string | number) => {
+  if (key == 'logout') {
+    try {
+      await authLogout()
+      message.success('退出成功')
+      commonStore.setUserLogout()
+      await router.push('/login')
+    } catch (err) {
+      message.error(`退出失败（${(err as { msg: string })?.msg}）`)
+    }
+  }
+}
+
+// 计算属性，动态生成 menuOptions
+const menuOptions = computed(() => {
+  return [
+    {
+      label: () =>
+        h(
+          RouterLink,
+          {
+            to: '/',
+          },
+          { default: () => '首页' },
+        ),
+      key: 'home',
+    },
+    {
+      label: () =>
+        h(
+          RouterLink,
+          {
+            to: '/manager',
+          },
+          { default: () => '管理' },
+        ),
+      key: 'manager',
+      show: isAdminRole.value,
+    },
+  ].filter((option) => !option.show || option.show)
+})
+
+watch(
+  userInfo,
+  (newValue) => {
+    isAdminRole.value = newValue?.role == 'admin'
+  },
+  { deep: true, immediate: true },
+)
+</script>
 <template>
   <div class="menu">
     <n-space class="center">
@@ -63,81 +139,3 @@
   border-bottom: 2px solid #18a058 !important;
 }
 </style>
-<script setup lang="ts">
-import { h, onMounted, computed, ref, watch } from 'vue'
-import { type MenuOption, useThemeVars, createDiscreteApi } from 'naive-ui'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { useRouteStore } from '@/stores/route'
-import { useCommonStore } from '@/stores/common'
-import requester from '@/utils/requester'
-import { authLogout } from '@/api/auth'
-
-const routeStore = useRouteStore()
-const commonStore = useCommonStore()
-const { menuClicked } = storeToRefs(routeStore)
-const { isUserLogin, userInfo } = storeToRefs(commonStore)
-const route = useRoute()
-const router = useRouter()
-const themeVars = useThemeVars()
-const name = route.name
-const { message } = createDiscreteApi(['message'])
-const isAdminRole = ref(false)
-
-const dropdownOptions = [
-  {
-    label: '退出登录',
-    key: 'logout',
-  },
-]
-
-const handleSelect = async (key: string | number) => {
-  if (key == 'logout') {
-    const { code, msg } = await authLogout()
-    if (code == 0) {
-      message.success('退出成功')
-      commonStore.setUserLogout()
-      await router.push('/login')
-    } else {
-      message.error(`退出失败，${msg}`)
-    }
-  }
-}
-
-// 计算属性，动态生成 menuOptions
-const menuOptions = computed(() => {
-  return [
-    {
-      label: () =>
-        h(
-          RouterLink,
-          {
-            to: '/',
-          },
-          { default: () => '首页' },
-        ),
-      key: 'home',
-    },
-    {
-      label: () =>
-        h(
-          RouterLink,
-          {
-            to: '/manager',
-          },
-          { default: () => '管理' },
-        ),
-      key: 'manager',
-      show: isAdminRole.value,
-    },
-  ].filter((option) => !option.show || option.show)
-})
-
-watch(
-  userInfo,
-  (newValue) => {
-    isAdminRole.value = newValue?.role == 'admin'
-  },
-  { deep: true, immediate: true },
-)
-</script>

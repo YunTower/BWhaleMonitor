@@ -19,7 +19,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseLayout from '@/layouts/BaseLayout.vue'
-import { useCommonStore } from '@/stores/common'
+import { useCommonStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 
 const commonStore = useCommonStore()

@@ -97,7 +97,7 @@ import { onMounted, ref } from 'vue'
 import { sha256 } from 'js-sha256'
 import router from '@/router'
 import { useCommonStore } from '@/stores/common'
-import { installPanel } from '@/api/config'
+import { installPanel } from '@/apis/config'
 import { createDiscreteApi, type FormInst, type FormRules } from 'naive-ui'
 import type { missingExtension } from '@/types/global'
 

@@ -111,14 +111,14 @@
 }
 </style>
 <script setup lang="ts">
+import { createDiscreteApi, type FormRules, type FormValidationError } from 'naive-ui'
 import { onMounted, type Ref, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import {sha256} from "js-sha256";
 import router from '@/router'
-import { useCommonStore } from '@/stores/common'
-import { authAdminLogin, authVisitorLogin, getCaptcha } from '@/api/auth';
-import { createDiscreteApi, type FormRules, type FormValidationError } from 'naive-ui'
+import { useCommonStore } from '@/stores'
+import { authAdminLogin, authVisitorLogin, getCaptcha } from '@/apis/auth';
 
 const route = useRoute()
 const commonStore = useCommonStore()

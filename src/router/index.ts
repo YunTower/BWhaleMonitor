@@ -1,180 +1,46 @@
-import { ref, watch } from 'vue'
-import { storeToRefs } from 'pinia'
-import { createDiscreteApi } from 'naive-ui'
-import { useCommonStore } from '@/stores/common'
-import { useRouteStore } from '@/stores/route'
-import requester from '@/utils/requester'
-import type { baseConfigType } from '@/types/config'
-import { createRouter, createWebHashHistory, type RouteRecordRaw, useRoute } from 'vue-router'
-import { getConfig } from '@/api/config'
-import { authCheck } from '@/api/auth'
+import type { RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
-const { message } = createDiscreteApi(['message'])
-const routes: RouteRecordRaw[] = [
-  {
-    path: '/:catchAll(.*)',
-    name: 'not-found',
-    component: () => import('@/views/error.vue'),
-    meta: {
-      title: '404',
-      keepAlive: true,
-    },
-  },
-  {
-    path: '/install',
-    name: 'install',
-    component: () => import('../views/InstallView.vue'),
-    meta: {
-      title: '安装',
-      isMenu: true,
-    },
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('../views/LoginView.vue'),
-    meta: {
-      title: '登录',
-      isMenu: true,
-    },
-  },
-  {
-    path: '/',
-    name: 'home',
-    alias: ['/', '/home', '/index'],
-    component: () => import('../views/IndexView.vue'),
-    meta: {
-      title: '首页',
-      isMenu: true,
-    },
-  },
-]
+const defaultModules = import.meta.glob('./modules/**/default.ts', { eager: true })
 
-const routesOnlyAdmin: RouteRecordRaw[] = [
-  {
-    path: '/manager',
-    name: 'manager',
-    meta: {
-      title: '管理',
-      isMenu: true,
-    },
-    children: [
-      {
-        path: 'server',
-        name: 'manager-server',
-        alias: ['/manager'],
-        component: () => import('../views/manager/server/ServerView.vue'),
-        meta: {
-          title: '服务器管理',
-        },
-      },
-      {
-        path: 'server/details/:id',
-        name: 'manager-server-details',
-        component: () => import('../views/manager/details/DetailsView.vue'),
-        meta: {
-          title: '详情',
-        },
-      },
-      {
-        path: 'setting',
-        name: 'manager-setting',
-        component: () => import('../views/manager/setting/SettingView.vue'),
-        meta: {
-          title: '系统设置',
-        },
-      },
-    ],
-  },
-]
+export const defaultRouterList: Array<RouteRecordRaw> = mapModuleRouterList(defaultModules)
+export const allRoutes = [...defaultRouterList]
 
-const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
-  routes,
-})
-
-const addDynamicRoutes = (routesToAdd: RouteRecordRaw[]) => {
-  routesToAdd.forEach((route) => {
-    router.addRoute(route)
+// 固定路由模块转换为路由
+export function mapModuleRouterList(modules: Record<string, unknown>): Array<RouteRecordRaw> {
+  const routerList: Array<RouteRecordRaw> = []
+  Object.keys(modules).forEach((key) => {
+    // @ts-expect-error: ignore
+    const mod = modules[key].default || {}
+    const modList = Array.isArray(mod) ? [...mod] : [mod]
+    routerList.push(...modList)
   })
+  return routerList
 }
 
-let isRedirected = false
+export const getActive = (maxLevel = 3): string => {
+  const route = router.currentRoute.value
 
-router.beforeEach(async (to, from, next) => {
-  const route = useRoute()
-  const routeStore = useRouteStore()
-  const commonStore = useCommonStore()
-  const mainTitle = ref('服务器探针')
-  const { isUserLogin, userInfo } = storeToRefs(commonStore)
-
-  watch(mainTitle, () => {
-    document.title = to.meta.title + ' - ' + mainTitle.value
-  })
-
-  if (to.meta.title) {
-    document.title = to.meta.title + ' - ' + mainTitle.value
+  if (!route.path) {
+    return ''
   }
 
-  /**
-   * 安装检查&配置获取
-   */
-  const { code, data } = await getConfig(['title', 'visitor', 'visitor_password'])
-  if (code === 1501) {
-    if (to.path === '/install') {
-      return next()
+  return route.path
+    .split('/')
+    .filter((_item: string, index: number) => index <= maxLevel && index > 0)
+    .map((item: string) => `/${item}`)
+    .join('')
+}
+
+const router = createRouter({
+  history: createWebHistory('/'),
+  routes: allRoutes,
+  scrollBehavior() {
+    return {
+      el: '#app',
+      top: 0,
+      behavior: 'smooth',
     }
-
-    if (!isRedirected) {
-      isRedirected = true
-      return next('/install')
-    }
-  }
-
-  commonStore.setInstall()
-  commonStore.setBaseConfig(data as baseConfigType)
-  if (commonStore.baseConfig?.title) {
-    mainTitle.value = commonStore.baseConfig?.title
-  }
-
-  /**
-   * 权限检查
-   */
-  if (!isUserLogin.value && to.name !== 'login') {
-    const { code, data, msg } = await authCheck()
-    if (code == 0) {
-      commonStore.setUserLogin(data)
-      return next()
-    }
-    message.error(msg)
-    return next('/login')
-  }
-
-  if (isUserLogin.value) {
-    if (
-      userInfo.value?.role != 'admin' &&
-      typeof to.name === 'string' &&
-      to.name?.startsWith('manager-')
-    ) {
-      return next('/')
-    }
-
-    if (userInfo.value?.role == 'admin') {
-      addDynamicRoutes(routesOnlyAdmin)
-    }
-  }
-
-  if (typeof to.name === 'string' && to.name.startsWith('manager-')) {
-    routeStore.setMenuClicked('manager')
-    routeStore.setSiderClicked(to.name)
-  } else if (to.meta?.isMenu) {
-    routeStore.setMenuClicked(to.name as string)
-  } else {
-    routeStore.setSiderClicked(to.name as string)
-  }
-
-  isRedirected = false
-  return next()
+  },
 })
-
 export default router

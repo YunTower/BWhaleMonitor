@@ -1,6 +1,6 @@
+import { request } from '@/utils/request'
 import type { Paginate } from '@/types/global'
 import type { AddForm, ServerInfoType } from '@/types/manager'
-import requester from '@/utils/requester'
 
 const API = {
   getSeverList: '/server/get',
@@ -10,7 +10,8 @@ const API = {
 }
 
 export const getSeverList = (view: 'list' = 'list', page: number = 1, limit: number = 15) => {
-  return requester.get<Paginate<ServerInfoType[]>>(API.getSeverList, {
+  return request.get<Paginate<ServerInfoType[]>>({
+    url: API.getSeverList,
     params: {
       view,
       page,
@@ -20,5 +21,5 @@ export const getSeverList = (view: 'list' = 'list', page: number = 1, limit: num
 }
 
 export const addSever = (data: AddForm) => {
-  return requester.post<ServerInfoType>(API.addSever, data)
+  return request.post<ServerInfoType>({ url: API.addSever, data })
 }
