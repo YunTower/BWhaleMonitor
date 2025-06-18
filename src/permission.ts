@@ -15,34 +15,26 @@ import { useWhiteListGuard } from '@/composables/useWhiteListGuard'
 
 router.beforeEach(async (to, from, next) => {
   // 安装检测与配置获取
-  console.log(11)
   const installRedirected = await useInstallCheck(to, next)
   if (installRedirected) return
-  console.log(22)
   // 配置页面标题
   useConfigTitle(to)
-  console.log(33)
 
   // 鉴权检查
   const authRedirected = await useAuthCheck(to, next)
   if (authRedirected) return
-  console.log(44)
 
   const commonStore = useCommonStore()
   const isUserLogin = commonStore.isUserLogin
-  console.log(55)
   if (isUserLogin) {
     if (to.name === 'auth-login') {
-      next('/')
-      return
+      return next('/')
     }
     try {
-      const handled = await useDynamicRouteGuard(to, from, next)
-      console.log()
-      if (handled) return
+      next()
     } catch (error) {
       message.error((error as { msg: string }).msg)
-      next({
+      return next({
         path: '/login',
         query: { redirect_url: encodeURIComponent(to.fullPath) },
       })
@@ -51,9 +43,9 @@ router.beforeEach(async (to, from, next) => {
     // 白名单守卫
     const isInWhiteList = useWhiteListGuard(to)
     if (isInWhiteList) {
-      next()
+      return next()
     } else {
-      next({
+      return next({
         path: '/login',
         query: { redirect_url: encodeURIComponent(to.fullPath) },
       })

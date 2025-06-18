@@ -1,3 +1,23 @@
+<script lang="ts" setup>
+import { onMounted, ref } from 'vue'
+import { createDiscreteApi } from 'naive-ui'
+import { getServerList } from '@/apis/server'
+import type { ServerItemType } from '@/types/manager'
+
+const loading = ref(true)
+const serverList = ref([] as ServerItemType[])
+const { message } = createDiscreteApi(['message'])
+
+onMounted(async () => {
+  try {
+    serverList.value = await getServerList()
+  } catch (err) {
+    message.error(`拉取服务器信息失败（${(err as { msg: string })?.msg}）`)
+  } finally {
+    loading.value = false
+  }
+})
+</script>
 <template>
   <n-grid cols="1 400:2 600:3 800:4 1000:5 1500:6 1700:7 1900:8 2100:9" :x-gap="12" :y-gap="8">
     <n-gi v-if="loading">
@@ -51,30 +71,3 @@
   margin: 0;
 }
 </style>
-<script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-import { createDiscreteApi } from 'naive-ui'
-import requester from '@/utils/requester'
-import type { BaseResponseType } from '@/types/global'
-import type { ServerItemType } from '@/types/manager'
-
-const loading = ref(true)
-const serverList = ref([] as ServerItemType[])
-const { message } = createDiscreteApi(['message'])
-
-onMounted(async () => {
-  try {
-    const { code, msg, data }: BaseResponseType<ServerItemType[]> =
-      await requester.get('/data/list.json')
-    if (code == 0) {
-      serverList.value = data
-    } else {
-      message.error(`拉取服务器信息失败（${msg}）`)
-    }
-  } catch (error) {
-    message.error(`拉取服务器信息失败，发生错误`)
-  } finally {
-    loading.value = false
-  }
-})
-</script>

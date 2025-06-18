@@ -2,12 +2,12 @@ import { shallowRef, type ShallowRef } from 'vue'
 import type { RouteItem } from '@/types/global'
 import type { RouteMeta } from 'vue-router'
 
-const iconsPath = import.meta.glob('../../node_modules/tdesign-icons-vue-next/esm/components/*.js')
+const iconsPath = import.meta.glob('../../node_modules/@vicons/ionicons5/es/*.js')
 
 // 动态从包内引入单个Icon
 export async function getMenuIcon(iconName: string): Promise<ShallowRef<unknown>> {
   const RenderIcon =
-    iconsPath[`../../node_modules/tdesign-icons-vue-next/esm/components/${iconName}.js`]
+    iconsPath[`../../node_modules/@vicons/ionicons5/es/${iconName}.js`]
   const icon = await RenderIcon()
   return shallowRef((icon as { default: unknown }).default)
 }

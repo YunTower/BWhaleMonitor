@@ -8,39 +8,7 @@ import type { RouteRecordRaw } from 'vue-router'
  */
 export async function useDynamicRouteGuard(to: any, from: any, next: any): Promise<boolean> {
   const permissionStore = getPermissionStore()
-  const { asyncRoutes } = permissionStore
-
-  if (asyncRoutes && asyncRoutes.length === 0) {
-    const routeList = await permissionStore.buildAsyncRoutes()
-    routeList.forEach((item: RouteRecordRaw) => {
-      router.addRoute(item)
-    })
-
-    if (to.name === '404') {
-      next({ path: to.fullPath, replace: true, query: to.query })
-      return true
-    } else {
-      // 处理多层编码的redirect_url
-      let redirect_url = (from.query.redirect_url || to.path) as string
-      let prevUrl = ''
-      while (prevUrl !== redirect_url) {
-        prevUrl = redirect_url
-        redirect_url = decodeURIComponent(redirect_url)
-      }
-      const urlObj = new URL(redirect_url, window.location.origin)
-      const path = urlObj.pathname
-      const searchParams = Object.fromEntries(urlObj.searchParams)
-      next(
-        to.path === path
-          ? { ...to, replace: true }
-          : {
-            path: path,
-            query: { ...searchParams, ...to.query },
-          },
-      )
-      return true
-    }
-  }
+  // 动态路由已全局预加载，无需再注册
   if (to.name) {
     if (router.hasRoute(to.name as string)) {
       next()

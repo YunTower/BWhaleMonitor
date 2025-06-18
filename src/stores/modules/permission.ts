@@ -11,6 +11,7 @@ export const usePermissionStore = defineStore('permission', {
     whiteListRouters: [
       '/login',
       '/install',
+      '/404'
     ],
     routers: [] as RouteRecordRaw[],
     removeRoutes: [] as RouteRecordRaw[],

@@ -1,54 +1,47 @@
-<template>
-  <n-config-provider>
-    <n-message-provider>
-      <n-spin :show="loading">
-        <div v-if="noNeedMenu">
-          <router-view />
-        </div>
-        <div v-else>
-          <BaseLayout :name="computedLayout">
-            <router-view />
-          </BaseLayout>
-        </div>
-      </n-spin>
-    </n-message-provider>
-  </n-config-provider>
-</template>
-
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import BaseLayout from '@/layouts/BaseLayout.vue'
-import { useCommonStore } from '@/stores'
 import { storeToRefs } from 'pinia'
+import { useCommonStore } from '@/stores'
+import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import ManagerLayout from '@/layouts/ManagerLayout.vue'
 
 const commonStore = useCommonStore()
 const { isInstall } = storeToRefs(commonStore)
 const route = useRoute()
-
 const loading = ref(true)
-const noNeedMenu = ref(false)
-
+const hideMenu = computed(() => {
+  return !isInstall.value || route.name === 'login'
+})
 const isManagerPage = computed(() => {
   const routeName = route.name?.toString()
   return routeName?.startsWith('manager-') || routeName === 'manager'
 })
 
-const computedLayout = computed(() => (isManagerPage.value ? 'ManagerLayout' : 'DefaultLayout'))
-
-const updateNoNeedMenu = () => {
-  noNeedMenu.value = !isInstall.value || route.name === 'login'
-}
-
-onMounted(async () => {
-  loading.value = false
-  updateNoNeedMenu()
+const layoutComponent = computed(() => {
+  if (isManagerPage.value) {
+    return ManagerLayout
+  }
+  return DefaultLayout
 })
 
-watch(
-  () => route.name,
-  () => {
-    updateNoNeedMenu()
-  },
-)
+onMounted(() => {
+  loading.value = false
+})
 </script>
+<template>
+  <n-config-provider>
+    <n-message-provider>
+      <n-spin :show="loading">
+        <div v-if="hideMenu">
+          <router-view />
+        </div>
+        <div v-else>
+          <component :is="layoutComponent">
+            <router-view />
+          </component>
+        </div>
+      </n-spin>
+    </n-message-provider>
+  </n-config-provider>
+</template>
