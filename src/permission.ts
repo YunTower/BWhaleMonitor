@@ -24,6 +24,16 @@ router.beforeEach(async (to, from, next) => {
   const authRedirected = await useAuthCheck(to, next)
   if (authRedirected) return
 
+  try {
+    const permissionStore = getPermissionStore()
+    const asyncRoutes = await permissionStore.buildAsyncRoutes()
+    asyncRoutes.forEach((route) => {
+      router.addRoute(route)
+    })
+  } catch (e) {
+    message.error((e as { message: string })?.message)
+  }
+
   const commonStore = useCommonStore()
   const isUserLogin = commonStore.isUserLogin
   if (isUserLogin) {

@@ -8,11 +8,7 @@ import { transformObjectToRoute } from '@/utils/route'
 
 export const usePermissionStore = defineStore('permission', {
   state: () => ({
-    whiteListRouters: [
-      '/login',
-      '/install',
-      '/404'
-    ],
+    whiteListRouters: ['/login', '/install', '/404'],
     routers: [] as RouteRecordRaw[],
     removeRoutes: [] as RouteRecordRaw[],
     asyncRoutes: [] as RouteRecordRaw[],
@@ -29,14 +25,14 @@ export const usePermissionStore = defineStore('permission', {
       }
 
       try {
-        const asyncRoutes= await getMenuList()
+        const asyncRoutes = await getMenuList()
         this.asyncRoutes = transformObjectToRoute(asyncRoutes)
         this.isRoutesBuilt = true
         await this.initRoutes()
         return this.asyncRoutes
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        throw new Error("Can't build routes")
+        throw new Error((error as { msg: string }).msg)
       }
     },
     async restoreRoutes() {
