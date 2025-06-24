@@ -12,8 +12,12 @@ import { useAuthCheck } from '@/composables/useAuthCheck'
 import { useConfigTitle } from '@/composables/useConfigTitle'
 import { useDynamicRouteGuard } from '@/composables/useDynamicRouteGuard'
 import { useWhiteListGuard } from '@/composables/useWhiteListGuard'
+import { storeToRefs } from 'pinia'
 
 router.beforeEach(async (to, from, next) => {
+  const commonStore = useCommonStore()
+  const { isUserLogin } = storeToRefs(commonStore)
+
   // 安装检测与配置获取
   const installRedirected = await useInstallCheck(to, next)
   if (installRedirected) return
@@ -24,19 +28,7 @@ router.beforeEach(async (to, from, next) => {
   const authRedirected = await useAuthCheck(to, next)
   if (authRedirected) return
 
-  try {
-    const permissionStore = getPermissionStore()
-    const asyncRoutes = await permissionStore.buildAsyncRoutes()
-    asyncRoutes.forEach((route) => {
-      router.addRoute(route)
-    })
-  } catch (e) {
-    message.error((e as { message: string })?.message)
-  }
-
-  const commonStore = useCommonStore()
-  const isUserLogin = commonStore.isUserLogin
-  if (isUserLogin) {
+  if (isUserLogin.value) {
     if (to.name === 'auth-login') {
       return next('/')
     }

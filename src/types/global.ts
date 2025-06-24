@@ -1,6 +1,6 @@
 import type { DefineComponent, defineComponent } from 'vue'
 
-export interface userType {
+export interface UserInfo {
   username: string
   role: 'admin' | 'visitor'
 }

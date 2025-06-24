@@ -115,10 +115,10 @@ import { createDiscreteApi, type FormRules, type FormValidationError } from 'nai
 import { onMounted, type Ref, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import {sha256} from "js-sha256";
+import { sha256 } from 'js-sha256'
 import router from '@/router'
 import { useCommonStore } from '@/stores'
-import { authAdminLogin, authVisitorLogin, getCaptcha } from '@/apis/auth';
+import { authAdminLogin, authVisitorLogin, getCaptcha } from '@/apis/auth'
 
 const route = useRoute()
 const commonStore = useCommonStore()
@@ -248,16 +248,13 @@ const handleLogin = async (
       loading.destroy()
     } else {
       try {
-        const { code, msg, data } = await loginFunc(formValue)
-        if (code === 0) {
-          message.success('登录成功', { duration: 5000 })
-          commonStore.setUserLogin(data)
-          await router.push('/')
-        } else {
-          message.error(`登录失败（${msg}）`, { duration: 5000 })
-        }
+        const data = await loginFunc(formValue)
+        message.success('登录成功', { duration: 5000 })
+        commonStore.setUserLogin(data)
+        await router.push('/')
       } catch (error) {
-        message.error(`登录失败，发生错误（${(error as Error).message}）`, { duration: 5000 })
+        requestCaptcha()
+        message.error((error as { msg: string }).msg ?? '登录失败，发生错误', { duration: 5000 })
       } finally {
         btnLoading.value = false
         loading.destroy()
@@ -268,10 +265,15 @@ const handleLogin = async (
 
 const onAdminLogin = (e: MouseEvent) => {
   e.preventDefault()
-  handleLogin(adminFormRef, {
-    ...adminFormValue.value,
-    ...{ password: sha256(adminFormValue.value.password) },
-  }, authAdminLogin, adminLoginBtnLoading)
+  handleLogin(
+    adminFormRef,
+    {
+      ...adminFormValue.value,
+      ...{ password: sha256(adminFormValue.value.password) },
+    },
+    authAdminLogin,
+    adminLoginBtnLoading,
+  )
 }
 
 const onVisitorLogin = (e: MouseEvent) => {

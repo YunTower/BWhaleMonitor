@@ -1,7 +1,8 @@
 import { authCheck } from '@/apis/auth'
-import { useCommonStore } from '@/stores'
+import { getPermissionStore, useCommonStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { createDiscreteApi } from 'naive-ui'
+import router from '@/router'
 
 const { message } = createDiscreteApi(['message'])
 
@@ -12,10 +13,17 @@ const { message } = createDiscreteApi(['message'])
 export async function useAuthCheck(to: any, next: any): Promise<boolean> {
   const commonStore = useCommonStore()
   const { isUserLogin } = storeToRefs(commonStore)
+
   if (!isUserLogin.value && to.name !== 'login') {
     try {
       const data = await authCheck()
-      commonStore.setUserLogin(data)
+      commonStore.setUserLogin(data.user)
+      const permissionStore = getPermissionStore()
+      const asyncRoutes = await permissionStore.buildAsyncRoutes(data.routes)
+      asyncRoutes.forEach((route) => {
+        router.addRoute(route)
+      })
+
       return false
     } catch (err) {
       message.error((err as { msg: string })?.msg ?? '获取登录状态失败')

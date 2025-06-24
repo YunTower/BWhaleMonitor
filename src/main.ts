@@ -1,12 +1,11 @@
 import './assets/main.css'
-import { createApp, watch } from 'vue'
-import { createPinia, storeToRefs } from 'pinia'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 
+import './permission'
 import App from './App.vue'
 import router from './router'
 import naive from 'naive-ui'
-import './permission'
-import { getPermissionStore } from '@/stores'
 
 const app = createApp(App)
 

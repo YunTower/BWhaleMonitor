@@ -1,12 +1,12 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { userType } from '@/types/global'
+import type { UserInfo } from '@/types/global'
 import type { baseConfigType } from '@/types/config'
 
 export const useCommonStore = defineStore('common', () => {
   const isInstall = ref(false)
   const isUserLogin = ref(false)
-  const userInfo = ref(<userType | null>{})
+  const userInfo = ref(<UserInfo | null>{})
   const baseConfig = ref(<baseConfigType>{})
 
   const setBaseConfig = (config: baseConfigType) => {
